@@ -71,7 +71,7 @@ class KNeighborsRegressor():
         # print(final_result)
         final_result = final_result/final_result.sum()
         return final_result.reshape(1,-1)
-    def predict(self, X_pred):
+    def predict(self, X_pred, watch=False):
         """
 
         Parameters
@@ -90,6 +90,6 @@ class KNeighborsRegressor():
         for i,x_pred in enumerate(X_pred):
             Y_pred[i] = self._predict_single(x_pred)
             count += 1
-            if (count % 10 == 0):
+            if (watch and count % 10 == 0):
                 print("current status: {}/{}".format(count, total_num))
         return Y_pred
