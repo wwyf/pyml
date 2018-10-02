@@ -9,9 +9,9 @@ def cosine_similarity(vec1 : np.ndarray, vec2 : np.ndarray):
     Parameters
     ----------
 
-    vec1: shape (1, n_features)
+    vec1: shape (1, n_features) or shape(n_features,)
 
-    vec2: shape (1, n_features)
+    vec2: shape (1, n_features) or shape(n_features,)
 
     Returns
     --------
@@ -19,6 +19,8 @@ def cosine_similarity(vec1 : np.ndarray, vec2 : np.ndarray):
     distances : shape (1, 1)
 
     """
+    vec1 = vec1.reshape((1,-1))
+    vec2 = vec2.reshape((1,-1))
     assert(vec1.shape[0] == 1)
     assert(vec2.shape[0] == 1)
     assert(vec1.shape[1] == vec2.shape[1])
@@ -37,9 +39,9 @@ def cosine_distance(vec1, vec2):
     Parameters
     ----------
 
-    vec1 : shape (1, n_features)
+    vec1 : shape (1, n_features) or shape(n_features,)
 
-    vec2 : shape (1, n_features)
+    vec2 : shape (1, n_features) or shape(n_features,)
 
     Returns
     --------
@@ -49,15 +51,15 @@ def cosine_distance(vec1, vec2):
     """
     return 1.0 - cosine_similarity(vec1, vec2)
 
-def euclidean_distance(left, right):
+def euclidean_distance(vec1, vec2):
     """the euclidean distance of two vectors
 
     Parameters
     -----------
 
-    left: shape (1, n_features)
+    vec1: shape (1, n_features) or shape(n_features,)
 
-    right: shape (1, n_features)
+    vec2: shape (1, n_features) or shape(n_features,)
 
     Returns
     -------
@@ -65,10 +67,13 @@ def euclidean_distance(left, right):
     distances : shape (1, 1)
 
     """
-    assert(left.shape[0] == 1)
-    assert(right.shape[0] == 1)
-    assert(left.shape[1] == right.shape[1])
-    return np.linalg.norm(left-right)
+
+    vec1 = vec1.reshape((1,-1))
+    vec2 = vec2.reshape((1,-1))
+    assert(vec1.shape[0] == 1)
+    assert(vec2.shape[0] == 1)
+    assert(vec1.shape[1] == vec2.shape[1])
+    return np.linalg.norm(vec1-vec2)
 
 def l_p_distance(vec1, vec2,p=1):
     """ calculate the p(default 1) norm of two vectors
@@ -76,9 +81,9 @@ def l_p_distance(vec1, vec2,p=1):
     Parameters
     ------------
 
-    vec1 : shape (1, n_features)
+    vec1 : shape (1, n_features) or shape(n_features,)
 
-    vec2 : shape (1, n_features)
+    vec2 : shape (1, n_features) or shape(n_features,)
 
     Returns
     --------
@@ -86,6 +91,9 @@ def l_p_distance(vec1, vec2,p=1):
     distances : shape (1, 1)
 
     """
+
+    vec1 = vec1.reshape((1,-1))
+    vec2 = vec2.reshape((1,-1))
     assert(vec1.shape[0] == 1)
     assert(vec2.shape[0] == 1)
     assert(vec1.shape[1] == vec2.shape[1])

@@ -3,7 +3,7 @@ import numpy as np
 def pearson_correlation(y_pred,y_true):
     """ calculation the pearson correlation coefficient
 
-    如果输入的是二维矩阵，那么就计算多个feature的平均相关系数
+    如果输入的是二维矩阵，那么就计算多个feature的平均相关系数。
 
     Parameters
     -------------
