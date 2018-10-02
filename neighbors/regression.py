@@ -85,6 +85,11 @@ class KNeighborsRegressor():
         """
         assert(X_pred.shape[1] == self.n_features) # the number of features should be consistent
         Y_pred = np.zeros((X_pred.shape[0], self.y_features))
+        total_num = X_pred.shape[0]
+        count = 0
         for i,x_pred in enumerate(X_pred):
             Y_pred[i] = self._predict_single(x_pred)
+            count += 1
+            if (count % 10 == 0):
+                print("current status: {}/{}".format(count, total_num))
         return Y_pred
