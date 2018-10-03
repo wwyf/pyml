@@ -4,6 +4,8 @@ import numpy as np
 from pyml.tree.classification import entropy
 from pyml.tree.classification import condition_entropy
 from pyml.tree.classification import information_gain
+from pyml.tree.classification import gini
+from pyml.tree.classification import condition_gini
 # from pyml.tree.classification import get_best_split_point
 # from pyml.tree.classification import divide_dataset
 from pyml.tree.classification import DecisionTreeClassifier
@@ -24,7 +26,15 @@ class test_classification(unittest.TestCase):
         right = np.array([0,0,1,1,1,0,1,0,1,1,1,1,1,0])
         test_result = information_gain(left, right)
         self.assertAlmostEqual(test_result, 0.24674981)
-
+    def test_gini(self):
+        test_data = np.array([1,1,1,1,1,1,1,1,1,0,0,0,0,0])
+        test_result = gini(test_data)
+        self.assertAlmostEqual(test_result, 0.459183673)
+    def test_condition_gini(self):
+        left = np.array(['y','y','m','o','o','o','m','y','y','o','y','m','m','o'])
+        right = np.array([0,0,1,1,1,0,1,0,1,1,1,1,1,0])
+        test_result = condition_gini(left, right)
+        self.assertAlmostEqual(test_result, 0.34285714)
     def test_DecisionTreeClassifier_id3(self):
         X = np.array([
             ['y','y','m','o','o','o','m','y','y','o','y','m','m','o'], 

@@ -84,7 +84,71 @@ def information_gain_radio(left, right):
     split_info = entropy(left)
     infor_gain = information_gain(left, right)
     # FIXME: 可能信息量为0所以加1，这一个需要吗？
-    return infor_gain/(split_info+1)
+    return infor_gain/(split_info+0.00000001)
+
+
+def gini(l):
+    """
+    计算特征 left 对于 数据集right的gini指数
+
+    Parameters
+    ------------
+    l : 1d array-like shape(n_samples, )
+        条件对应的列
+
+    Returns
+    ----------
+    result : gini
+    """
+    feature_values, counts = np.unique(l, return_counts=True)
+    probabilities = counts/counts.sum()
+    l_h = 1-(np.square(probabilities)).sum()
+    return l_h
+
+
+def condition_gini(left, right):
+    """
+    Parameters
+    ----------
+    left : 1d array-like shape(n_samples, )
+        条件对应的列
+    right : 1d array-like shape(n_samples, )
+        用来计算熵的一列 
+
+    Returns
+    ------------
+    result : condition entropy
+    """
+    feature_values, counts = np.unique(left, return_counts=True)
+    probabilities = counts/counts.sum()
+    entropies = np.zeros((len(feature_values)))
+    for i,feature_value in enumerate(feature_values):
+        # 对于每一个value
+        # 先找出对应的y中的所有索引，取出相关的y
+        # 然后调用计算熵的函数去计算
+        this_indices = np.argwhere(left == feature_value).reshape(-1)
+        entropies[i] = gini(right[this_indices])
+    result = (probabilities * entropies).sum()
+    return result
+
+def gini_gain(left, right):
+    """
+    计算特征 left 对于 数据集right的gini信息增益
+
+    Parameters
+    ------------
+    left : 1d array-like shape(n_samples, )
+        条件对应的列
+    right : 1d array-like shape(n_samples, )
+        用来计算熵的一列 
+
+    Returns
+    ----------
+    result : information_gain
+
+    """
+    return gini(right) - condition_gini(left, right)
+
 
 class DecisionTreeClassifier():
     """
@@ -140,6 +204,8 @@ class DecisionTreeClassifier():
             score_func = information_gain
         elif self.method == 'c4.5':
             score_func = information_gain_radio
+        elif self.method == 'cart':
+            score_func = gini_gain
         else :
             raise NotImplementedError
         feature_values = [score_func(sub_X[:,self.get_feature_columns_index(feature)], sub_Y) for feature in features]
