@@ -169,7 +169,7 @@ class DecisionTreeClassifier():
         self.method = method
 
     def build_tree(
-            self,
+            self,ori_X,
             sub_X, sub_Y, features,
             parent_class=None
     ):
@@ -185,6 +185,9 @@ class DecisionTreeClassifier():
         -----------
         tree : dict
         """
+        # 如果此时数据集为空 即此时子节点所获得的数据集中某特征下的量并不完整
+        if len(sub_X) == 0:
+            return parent_class.item()
         # 有这些情况是可能需要直接返回值的，表示已经能够确定分类结果
         # 此时的数据集都分到了同一类，不需要再分类
         if len((np.unique(sub_Y))) <= 1:
@@ -194,7 +197,6 @@ class DecisionTreeClassifier():
         if len(features) == 0:
             return parent_class.item()
         
-        # 如果此时数据集为空 TODO: 我觉得这没有可能？
 
         # 从sub_Y里面取出现次数最多的，作为该节点的结果
         current_node_class = np.unique(sub_Y)[np.argmax(np.unique(sub_Y, return_counts=True)[1])]
@@ -212,18 +214,25 @@ class DecisionTreeClassifier():
         best_feature_index = np.argmax(feature_values)
         best_feature = features[best_feature_index]
 
+        # 如果子数据集中的所有样本的所有特征都相同，此时无法划分
+        # 将当前节点标记为叶节点，类别为D中出现次数最多的类
+        if feature_values[best_feature_index] == 0:
+            return current_node_class.item()
+
         tree = {best_feature:{}}
 
         # 将best feature删掉
         features = [i for i in features if i != best_feature]
         best_feature_index = self.get_feature_columns_index(best_feature)
-        for value in np.unique(sub_X[:,best_feature_index]):
+        # NOTE: 这里改成了ori_X 
+        # 是为了能够让特征无论建在树的哪一层都能够知道整个数据集该特征的所有取值
+        for value in np.unique(ori_X[:,best_feature_index]):
             # 取一个子数据集
             sub_sub_X = sub_X[sub_X[:, best_feature_index] == value]
             sub_sub_Y = sub_Y[sub_X[:, best_feature_index] == value]
 
             # 生成新树
-            subtree = self.build_tree(sub_sub_X, sub_sub_Y, features, current_node_class)
+            subtree = self.build_tree(ori_X, sub_sub_X, sub_sub_Y, features, current_node_class)
 
             # 将树节点加到根节点下
             tree[best_feature][value] = subtree
@@ -247,7 +256,7 @@ class DecisionTreeClassifier():
             feature_names = range(0, X.shape[1])
         assert(X.shape[1] == len(feature_names))
         self.feature_names = feature_names
-        self.root_node = self.build_tree(X, Y, feature_names, self.method)
+        self.root_node = self.build_tree(X, X, Y, feature_names, self.method)
 
     def get_feature_columns_index(self, feature_name):
         return self.feature_names.index(feature_name)
@@ -256,11 +265,12 @@ class DecisionTreeClassifier():
         for key in list(x_dict.keys()):
             # 遍历X的feature name ,如果在决策树当前根节点中找到了对应的feature，就尝试返回该feature value下对应的结果，如果该结果仍然是一棵树，就继续递归循环
             if key in list(tree.keys()):
+                # print(json.dumps(tree,indent=4,sort_keys=True))
                 # FIXME: 不知道为什么，树可能是不完备的？
-                try : 
-                    result = tree[key][x_dict[key]]
-                except :
-                    return 0
+                # try :
+                #     result = tree[key][x_dict[key]]
+                # except :
+                #     return 1
                 result = tree[key][x_dict[key]]
                 if isinstance(result, dict):
                     return self._predict_subtree(x_dict, result)
