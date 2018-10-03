@@ -106,7 +106,7 @@ def get_best_split_point(X, Y, method='id3', used_feature_list=[]):
             # TODO: 其他算法等待实现
             raise NotImplementedError
     # 取分数最高的那一个特征，并且返回这一个特征的索引
-    return np.argmax(scores)
+    return np.argmax(scores).item()
 
 class DecisionTreeNode():
     def __init__(self):
@@ -116,18 +116,19 @@ class DecisionTreeNode():
         self.is_leaf = False
 
     def set_root_node(self, this_feature_index):
+        self.is_leaf = False
         self.this_feature_index = this_feature_index
     
     def set_leaf_node(self, classification_result):
         self.classification_result = classification_result
-        self.if_leaf = True
+        self.is_leaf = True
 
     def get_next_node(self, x):
         """
 
         Parameters
         -----------
-        x : 1d array-like shape(1, n_features)
+        x : 1d array-like shape(n_features, )
 
         this_feature_value : the value of this feature
 
@@ -136,7 +137,7 @@ class DecisionTreeNode():
         next_node : the children node
 
         """
-        this_feature_value = x[0][self.this_feature_index]
+        this_feature_value = x[self.this_feature_index]
         if (self.is_leaf) :
             return None
         return self.children_node[this_feature_value]
@@ -145,7 +146,7 @@ class DecisionTreeNode():
         """
         Parameters
         ------------
-        x : 1d array-like shape(1, n_features)
+        x : 1d array-like shape(n_features, )
 
         Returns
         --------
@@ -154,90 +155,141 @@ class DecisionTreeNode():
         cur_node = self
         while (not cur_node.is_leaf):
             cur_node = cur_node.get_next_node(x)
+        # now cur_node is leaf node
         return cur_node.classification_result
-    
 
-# def build_tree(X, Y, method='id3', used_feature_list=[]):
-#     """
-#     Parameters
-#     ------------
-#     X : 2d array-like shape(n_samples, n_features)
-#     Y : 1d array-like shape(n_samples, )
+def divide_dataset(X, Y, split_index):
+    """
+    Parameters
+    ------------
+    X : 2d array-like shape(n_samples, n_features)
+    Y : 1d array-like shape(n_samples, )
+    split_index : int
+        根据这一列的特征进行数据集的拆分
 
-#     Returns
-#     -----------
-#     root_node : the root node of decision tree
-
-#     """
-#     # TODO: 深度信息如何用？如何判断应该停止建树？ 
-
-#     # 1. 每一个特征都使用过了，此时应该停止建树
-#     if len(used_feature_list) == X.shape[1]:
-#         # 从Y中选择出现最多的那一个作为结果
-#         classification_result = find_most_common(list(Y))
-#         leaf_node = DecisionTreeNode()
-#         leaf_node.set_leaf_node(classification_result)
-#         return leaf_node
-#     # 2. 需要建的这一个节点中的每一个样例都有相同的Y，即去重后只有1个Y,不需要再去拆分
-#     if len(np.unique(Y)) == 1:
-#         # 从Y中选择出现最多的那一个作为结果
-#         classification_result = Y[0]
-#         leaf_node = DecisionTreeNode()
-#         leaf_node.set_leaf_node(classification_result)
-#         return leaf_node
-
-#     # 得到最佳拆分特征索引，以及更新用过了的特征的索引列表
-#     split_point_index,used_feature_list = get_best_split_point(X,Y,method, used_feature_list)
-#     # create the root node of Decision Tree
-#     root_node = DecisionTreeNode(split_point_index)
-#     # divide the dataset according split_point_index
-#     feature_values, Xs, Ys = divide_dataset(X,Y,split_point_index)
-#     for feature_value, X, Y in zip(feature_values, Xs, Ys):
-#         root_node.children_node[feature_value] = build_tree(X,Y, used_feature_list)
-#     return root_node
+    Returns
+    -----------
+    feature_values : list of object
+        该特征中存在的所有值
+    Xs : list of X
+        通过该特征，拆分出来的多个子数据集
+    Ys : list of Y
+        通过该特征，拆分出来的多个子数据集
+    """
+    this_feature = X[:,split_index]
+    feature_values = list(np.unique(this_feature))
+    Xs = []
+    Ys = []
+    for feature_value in feature_values:
+        # 获得X中该value对应的所有索引
+        this_value_indices = np.argwhere(this_feature == feature_value).reshape(-1)
+        Xs.append(X[this_value_indices])
+        Ys.append(Y[this_value_indices])
+    return feature_values, Xs, Ys
 
 
 
-# class DecisionTreeClassifier():
-#     """
-#     寻找 向量[x1, x2, x3, ... , xn] -> 种类 y 的映射关系
 
-#     Parameters
-#     ----------
-#     k : int, optional (default = 5)
-#         Number of neighbors to use by default.
+class DecisionTreeClassifier():
+    """
+    寻找 向量[x1, x2, x3, ... , xn] -> 种类 y 的映射关系
 
-#     distance_func : callable, optional (default = euclidean_distance)
-#         distance function used in find the neighbors
+    Parameters
+    ----------
+    method : string
+        'id3'
+        'c4.5'
+        'cart'
 
-#         - [callable] : a function like f(vec1,vec2) 
-#             which can return the distance(float).
+    Notes
+    ------
+    None
+    """
+    def __init__(self, method='id3'):
+        self.method = method
 
-#     Notes
-#     ------
-#     None
-#     """
+    def build_tree(self, X, Y, method, used_feature_list=[]):
+        """
+        Parameters
+        ------------
+        X : 2d array-like shape(n_samples, n_features)
+        Y : 1d array-like shape(n_samples, )
 
-#     def fit(self, X, Y):
-#         """
+        Returns
+        -----------
+        root_node : the root node of decision tree
 
-#         Parameters
-#         -----------
-#         X : array-like shape(n_samples, n_features)
+        """
+        # TODO: 深度信息如何用？如何判断应该停止建树？ 
 
-#         Y : array-like shape(n_samples,) not-negative number
+        # 1. 每一个特征都使用过了，此时应该停止建树
+        if len(used_feature_list) == X.shape[1]:
+            # 从Y中选择出现最多的那一个作为结果
+            classification_result = find_most_common(list(Y))
+            leaf_node = DecisionTreeNode()
+            leaf_node.set_leaf_node(classification_result)
+            return leaf_node
+        # 2. 需要建的这一个节点中的每一个样例都有相同的Y，即去重后只有1个Y,不需要再去拆分
+        if len(np.unique(Y)) == 1:
+            # 从Y中选择出现最多的那一个作为结果
+            classification_result = Y[0]
+            leaf_node = DecisionTreeNode()
+            leaf_node.set_leaf_node(classification_result)
+            return leaf_node
 
-#         """
+        # 得到最佳拆分特征索引，以及更新用过了的特征的索引列表
+        split_point_index = get_best_split_point(X,Y,method, used_feature_list)
+        used_feature_list.append(split_point_index)
+        # create the root node of Decision Tree
+        root_node = DecisionTreeNode()
+        root_node.set_root_node(split_point_index)
+        # divide the dataset according split_point_index
+        feature_values, Xs, Ys = divide_dataset(X,Y,split_point_index)
+        for feature_value, X, Y in zip(feature_values, Xs, Ys):
+            root_node.children_node[feature_value] = self.build_tree(X,Y,method, used_feature_list)
+        return root_node
 
-#     def predict(self, X_pred):
-#         """
 
-#         Parameters
-#         -------------
-#             X_pred : 2d array-like shape(n_samples, n_feature)
 
-#         Returns
-#         --------------
-#             pre_Y : 1d array-like shape(n_samples,)
+    def fit(self, X, Y):
+        """
 
-#         """
+        Parameters
+        -----------
+        X : array-like shape(n_samples, n_features)
+
+        Y : array-like shape(n_samples,) not-negative number
+
+        """
+        self.root_note = self.build_tree(X, Y, self.method)
+
+    def _predict_one(self, x):
+        """
+
+        Parameters
+        -----------
+        x : 1d array-like shape(n_features, )
+
+        Returns
+        ----------
+        
+
+        """
+        return self.root_note.get_classification_result(x)
+
+    def predict(self, X_pred):
+        """
+
+        Parameters
+        -------------
+            X_pred : 2d array-like shape(n_samples, n_feature)
+
+        Returns
+        --------------
+            Y_pred : 1d array-like shape(n_samples,)
+
+        """
+        Y_pred = np.zeros((X_pred.shape[0]))
+        for i,x in enumerate(X_pred):
+            Y_pred[i] = self._predict_one(x)
+        return Y_pred
