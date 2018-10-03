@@ -28,10 +28,8 @@ class test_classification(unittest.TestCase):
             [2,3,4,5,6,7.5,8,9],
             [4,5,6,7.5,8,9,10,11]
         ])
-        mini_standard_out_Y = np.array([
-            [0.231982, 0.333333, 0.434685],
-            [0.270308, 0.333333, 0.396359]
-        ])
+        mini_standard_out_Y = np.array([[2.041796, 3.041796, 4.041796],
+       [4.041796, 5.041796, 6.041796]])
         k_clf = KNeighborsRegressor(k=2)
         k_clf.fit(mini_train_X, mini_train_Y)
         Y_pred = k_clf.predict(mini_test_X)

@@ -32,7 +32,7 @@ class KNeighborsRegressor():
         -----------
         X : array-like shape(n_samples, n_features)
 
-        Y : array-like shape(n_samples,, y_features)
+        Y : array-like shape(n_samples, y_features)
 
         """
         self.X = X
@@ -63,13 +63,20 @@ class KNeighborsRegressor():
         # print("k_min_ys\n", k_min_ys)
         k_min_distances = distances[k_min_indexs]
         k_min_distances = np.array(k_min_distances).reshape(-1,1)
+        # 对距离先做正则化，然后再取倒数，然后再做正则化
+        # 结果需要：1. 和为1 2. 距离与结果成反相关
+        # TODO: 修改了这一处，还需要修改单元测试
+        k_min_distances_normalized = (k_min_distances-np.amin(k_min_distances) + 0.1)/(np.amax(k_min_distances)-np.amin(k_min_distances) + 0.1)
+        temp = 1/k_min_distances_normalized
+        k_min_distances_normalized = temp/temp.sum()
         # 计算概率并归一化
-        final_result = (k_min_ys/(k_min_distances+1)).sum(axis=0)
+        final_result = (k_min_ys * k_min_distances_normalized).sum(axis=0)
         # print(k_min_ys/(k_min_distances+1))
         # print("k_min_distances\n",k_min_distances)
         # print(k_min_ys)
         # print(final_result)
-        final_result = final_result/final_result.sum()
+        # 这一行误事！
+        # final_result = final_result/final_result.sum()
         return final_result.reshape(1,-1)
     def predict(self, X_pred, watch=False):
         """
@@ -89,6 +96,7 @@ class KNeighborsRegressor():
         count = 0
         for i,x_pred in enumerate(X_pred):
             Y_pred[i] = self._predict_single(x_pred)
+            # print(Y_pred[i])
             count += 1
             if (watch and count % 10 == 0):
                 print("current status: {}/{}".format(count, total_num))
