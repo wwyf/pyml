@@ -41,6 +41,22 @@ class test_classification(unittest.TestCase):
         y_pred = dt_clf.predict(X)
         test_y_pred = np.array([0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0])
         np.testing.assert_array_equal(y_pred, test_y_pred)
+    def test_DecisionTreeClassifier_c45(self):
+        X = np.array([
+            ['y','y','m','o','o','o','m','y','y','o','y','m','m','o'], 
+            # age 0.246
+            [0,0,0,0,1,1,1,0,1,1,1,0,1,0],
+            # is student? 0.151
+            ['h','h','h','m','l','l','l','m','l','m','m','m','h','m'] 
+            # salary 0.029
+        ])
+        X = X.T
+        Y = np.array([0,0,1,1,1,0,1,0,1,1,1,1,1,0])
+        dt_clf = DecisionTreeClassifier(method='c4.5')
+        dt_clf.fit(X,Y, feature_names=['age', 'is_student?', 'salary'])
+        y_pred = dt_clf.predict(X)
+        test_y_pred = np.array([0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0])
+        np.testing.assert_array_equal(y_pred, test_y_pred)
 
 
 if __name__ == '__main__':
