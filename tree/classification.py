@@ -130,7 +130,6 @@ class DecisionTreeClassifier():
     def build_tree(
             self,
             sub_X, sub_Y, features,
-            method='id3',
             parent_class=None
     ):
         """
@@ -160,7 +159,11 @@ class DecisionTreeClassifier():
         current_node_class = np.unique(sub_Y)[np.argmax(np.unique(sub_Y, return_counts=True)[1])]
 
         # 选取一个特征用于划分数据集
-        feature_values = [information_gain(sub_X[:,self.get_feature_columns_index(feature)], sub_Y) for feature in features]
+        if (self.method == 'id3'):
+            score_func = information_gain
+        else :
+            raise NotImplementedError
+        feature_values = [score_func(sub_X[:,self.get_feature_columns_index(feature)], sub_Y) for feature in features]
         best_feature_index = np.argmax(feature_values)
         best_feature = features[best_feature_index]
 
@@ -175,7 +178,7 @@ class DecisionTreeClassifier():
             sub_sub_Y = sub_Y[sub_X[:, best_feature_index] == value]
 
             # 生成新树
-            subtree = self.build_tree(sub_sub_X, sub_sub_Y, features, method, current_node_class)
+            subtree = self.build_tree(sub_sub_X, sub_sub_Y, features, current_node_class)
 
             # 将树节点加到根节点下
             tree[best_feature][value] = subtree
@@ -223,7 +226,9 @@ class DecisionTreeClassifier():
 
         Returns
         ----------
-    
+
+        result : int or str
+            在决策树中的分类结果
         """
         # return self.root_node.get_classification_result(x)
 
