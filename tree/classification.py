@@ -266,7 +266,7 @@ class DecisionTreeClassifier():
             # 遍历X的feature name ,如果在决策树当前根节点中找到了对应的feature，就尝试返回该feature value下对应的结果，如果该结果仍然是一棵树，就继续递归循环
             if key in list(tree.keys()):
                 # print(json.dumps(tree,indent=4,sort_keys=True))
-                # FIXME: 不知道为什么，树可能是不完备的？
+                # FIXME[FIXED]: 不知道为什么，树可能是不完备的？ 已FIX
                 # try :
                 #     result = tree[key][x_dict[key]]
                 # except :
