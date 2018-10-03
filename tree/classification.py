@@ -256,6 +256,11 @@ class DecisionTreeClassifier():
         for key in list(x_dict.keys()):
             # 遍历X的feature name ,如果在决策树当前根节点中找到了对应的feature，就尝试返回该feature value下对应的结果，如果该结果仍然是一棵树，就继续递归循环
             if key in list(tree.keys()):
+                # FIXME: 不知道为什么，树可能是不完备的？
+                try : 
+                    result = tree[key][x_dict[key]]
+                except :
+                    return 0
                 result = tree[key][x_dict[key]]
                 if isinstance(result, dict):
                     return self._predict_subtree(x_dict, result)
@@ -279,7 +284,7 @@ class DecisionTreeClassifier():
 
         x_dict = {}
         for i, key in enumerate(self.feature_names):
-            x_dict[key] = x[i].item()
+            x_dict[key] = x[i]
         result = self._predict_subtree(x_dict, self.root_node)
         return result
 

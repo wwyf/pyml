@@ -1,0 +1,117 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Counter	../tree\classification.py	/^from collections import Counter$/;"	kind:namespace	line:4
+DecisionTreeClassifier	../tree\classification.py	/^class DecisionTreeClassifier():$/;"	kind:class	line:153
+DecisionTreeClassifier	../tree\tests\test_classification.py	/^from pyml.tree.classification import DecisionTreeClassifier$/;"	kind:namespace	line:11
+DecisionTreeRegressor	../tree\regression.py	/^class DecisionTreeRegressor():/;"	kind:class	line:1
+KNeighborsClassifier	../neighbors\classification.py	/^class KNeighborsClassifier():$/;"	kind:class	line:5
+KNeighborsClassifier	../neighbors\tests\test_classification.py	/^from pyml.neighbors.classification import KNeighborsClassifier$/;"	kind:namespace	line:4
+KNeighborsRegressor	../neighbors\regression.py	/^class KNeighborsRegressor():$/;"	kind:class	line:5
+KNeighborsRegressor	../neighbors\tests\test_regression.py	/^from pyml.neighbors.regression import KNeighborsRegressor$/;"	kind:namespace	line:4
+__init__	../neighbors\classification.py	/^    def __init__(self, k=5, distance_func=euclidean_distance):$/;"	kind:member	line:25
+__init__	../neighbors\regression.py	/^    def __init__(self, k=5, distance_func=euclidean_distance):$/;"	kind:member	line:24
+__init__	../tree\classification.py	/^    def __init__(self, method='id3'):$/;"	kind:member	line:168
+__init__.py	../__init__.py	1;"	kind:file	line:1
+__init__.py	../metrics\__init__.py	1;"	kind:file	line:1
+__init__.py	../neighbors\__init__.py	1;"	kind:file	line:1
+__init__.py	../tree\__init__.py	1;"	kind:file	line:1
+_predict_one	../tree\classification.py	/^    def _predict_one(self, x):$/;"	kind:member	line:265
+_predict_single	../neighbors\classification.py	/^    def _predict_single(self, x):$/;"	kind:member	line:45
+_predict_single	../neighbors\regression.py	/^    def _predict_single(self, x):$/;"	kind:member	line:44
+_predict_subtree	../tree\classification.py	/^    def _predict_subtree(self, x_dict, tree):$/;"	kind:member	line:255
+build_tree	../tree\classification.py	/^    def build_tree($/;"	kind:member	line:171
+classification.py	../metrics\classification.py	1;"	kind:file	line:1
+classification.py	../neighbors\classification.py	1;"	kind:file	line:1
+classification.py	../tree\classification.py	1;"	kind:file	line:1
+condition_entropy	../tree\classification.py	/^def condition_entropy(left, right):$/;"	kind:function	line:25
+condition_entropy	../tree\tests\test_classification.py	/^from pyml.tree.classification import condition_entropy$/;"	kind:namespace	line:5
+condition_gini	../tree\classification.py	/^def condition_gini(left, right):$/;"	kind:function	line:109
+condition_gini	../tree\tests\test_classification.py	/^from pyml.tree.classification import condition_gini$/;"	kind:namespace	line:8
+cosine_distance	../metrics\pairwise.py	/^def cosine_distance(vec1, vec2):$/;"	kind:function	line:34
+cosine_distance	../metrics\tests\test_pairwise.py	/^from pyml.metrics.pairwise import cosine_distance$/;"	kind:namespace	line:8
+cosine_similarity	../metrics\pairwise.py	/^def cosine_similarity(vec1 : np.ndarray, vec2 : np.ndarray):$/;"	kind:function	line:4
+cosine_similarity	../metrics\tests\test_pairwise.py	/^from pyml.metrics.pairwise import cosine_similarity$/;"	kind:namespace	line:7
+entropy	../tree\classification.py	/^def entropy(l):$/;"	kind:function	line:13
+entropy	../tree\tests\test_classification.py	/^from pyml.tree.classification import entropy$/;"	kind:namespace	line:4
+euclidean_distance	../metrics\pairwise.py	/^def euclidean_distance(vec1, vec2):$/;"	kind:function	line:54
+euclidean_distance	../metrics\tests\test_pairwise.py	/^from pyml.metrics.pairwise import euclidean_distance$/;"	kind:namespace	line:5
+euclidean_distance	../neighbors\classification.py	/^from pyml.metrics.pairwise import euclidean_distance$/;"	kind:namespace	line:3
+euclidean_distance	../neighbors\regression.py	/^from pyml.metrics.pairwise import euclidean_distance$/;"	kind:namespace	line:3
+find_most_common	../tree\classification.py	/^def find_most_common(l):$/;"	kind:function	line:5
+fit	../neighbors\classification.py	/^    def fit(self, X, Y):$/;"	kind:member	line:30
+fit	../neighbors\regression.py	/^    def fit(self, X, Y):$/;"	kind:member	line:28
+fit	../tree\classification.py	/^    def fit(self, X, Y, feature_names=None):$/;"	kind:member	line:233
+get_feature_columns_index	../tree\classification.py	/^    def get_feature_columns_index(self, feature_name):$/;"	kind:member	line:252
+gini	../tree\classification.py	/^def gini(l):$/;"	kind:function	line:90
+gini	../tree\tests\test_classification.py	/^from pyml.tree.classification import gini$/;"	kind:namespace	line:7
+gini_gain	../tree\classification.py	/^def gini_gain(left, right):$/;"	kind:function	line:134
+information_gain	../tree\classification.py	/^def information_gain(left, right):$/;"	kind:function	line:50
+information_gain	../tree\tests\test_classification.py	/^from pyml.tree.classification import information_gain$/;"	kind:namespace	line:6
+information_gain_radio	../tree\classification.py	/^def information_gain_radio(left, right):$/;"	kind:function	line:68
+json	../tree\classification.py	/^import json$/;"	kind:namespace	line:2
+l_p_distance	../metrics\pairwise.py	/^def l_p_distance(vec1, vec2,p=1):$/;"	kind:function	line:78
+l_p_distance	../metrics\tests\test_pairwise.py	/^from pyml.metrics.pairwise import l_p_distance$/;"	kind:namespace	line:6
+np	../metrics\classification.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../metrics\pairwise.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../metrics\regression.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../metrics\tests\test_classification.py	/^import numpy as np$/;"	kind:namespace	line:2
+np	../metrics\tests\test_pairwise.py	/^import numpy as np$/;"	kind:namespace	line:2
+np	../metrics\tests\test_regression.py	/^import numpy as np$/;"	kind:namespace	line:2
+np	../neighbors\classification.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../neighbors\regression.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../neighbors\tests\test_classification.py	/^import numpy as np$/;"	kind:namespace	line:2
+np	../neighbors\tests\test_regression.py	/^import numpy as np$/;"	kind:namespace	line:2
+np	../tree\classification.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../tree\tests\test_classification.py	/^import numpy as np$/;"	kind:namespace	line:2
+pairwise.py	../metrics\pairwise.py	1;"	kind:file	line:1
+pearson_correlation	../metrics\regression.py	/^def pearson_correlation(y_pred,y_true):$/;"	kind:function	line:3
+pearson_correlation	../metrics\tests\test_regression.py	/^from pyml.metrics.regression import pearson_correlation$/;"	kind:namespace	line:4
+precision_score	../metrics\classification.py	/^def precision_score(y_true, y_pred):$/;"	kind:function	line:4
+precision_score	../metrics\tests\test_classification.py	/^from pyml.metrics.classification import precision_score$/;"	kind:namespace	line:4
+predict	../neighbors\classification.py	/^    def predict(self, X_pred):$/;"	kind:member	line:89
+predict	../neighbors\regression.py	/^    def predict(self, X_pred, watch=False):$/;"	kind:member	line:74
+predict	../tree\classification.py	/^    def predict(self, X_pred):$/;"	kind:member	line:286
+print_tree_graph	../tree\classification.py	/^    def print_tree_graph(self):$/;"	kind:member	line:303
+regression.py	../metrics\regression.py	1;"	kind:file	line:1
+regression.py	../neighbors\regression.py	1;"	kind:file	line:1
+regression.py	../tree\regression.py	1;"	kind:file	line:1
+sqrt	../metrics\tests\test_pairwise.py	/^from math import sqrt$/;"	kind:namespace	line:3
+test_DecisionTreeClassifier_c45	../tree\tests\test_classification.py	/^    def test_DecisionTreeClassifier_c45(self):$/;"	kind:member	line:54
+test_DecisionTreeClassifier_id3	../tree\tests\test_classification.py	/^    def test_DecisionTreeClassifier_id3(self):$/;"	kind:member	line:38
+test_KNeighborsClassifier_no_parameters	../neighbors\tests\test_classification.py	/^    def test_KNeighborsClassifier_no_parameters(self):$/;"	kind:member	line:8
+test_KNeighborsClassifier_no_parameters	../neighbors\tests\test_regression.py	/^    def test_KNeighborsClassifier_no_parameters(self):$/;"	kind:member	line:8
+test_KNeighborsClassifier_no_parameters_k3_multi_neighbors	../neighbors\tests\test_classification.py	/^    def test_KNeighborsClassifier_no_parameters_k3_multi_neighbors(self):$/;"	kind:member	line:33
+test_classification	../metrics\tests\test_classification.py	/^class test_classification(unittest.TestCase):$/;"	kind:class	line:6
+test_classification	../neighbors\tests\test_classification.py	/^class test_classification(unittest.TestCase):$/;"	kind:class	line:6
+test_classification	../neighbors\tests\test_regression.py	/^class test_classification(unittest.TestCase):$/;"	kind:class	line:6
+test_classification	../tree\tests\test_classification.py	/^class test_classification(unittest.TestCase):$/;"	kind:class	line:13
+test_classification.py	../metrics\tests\test_classification.py	1;"	kind:file	line:1
+test_classification.py	../neighbors\tests\test_classification.py	1;"	kind:file	line:1
+test_classification.py	../tree\tests\test_classification.py	1;"	kind:file	line:1
+test_condition_entropy	../tree\tests\test_classification.py	/^    def test_condition_entropy(self):$/;"	kind:member	line:19
+test_condition_gini	../tree\tests\test_classification.py	/^    def test_condition_gini(self):$/;"	kind:member	line:33
+test_cosine_distance	../metrics\tests\test_pairwise.py	/^    def test_cosine_distance(self):$/;"	kind:member	line:26
+test_cosine_similarity	../metrics\tests\test_pairwise.py	/^    def test_cosine_similarity(self):$/;"	kind:member	line:12
+test_entropy	../tree\tests\test_classification.py	/^    def test_entropy(self):$/;"	kind:member	line:15
+test_euclidean_distance	../metrics\tests\test_pairwise.py	/^    def test_euclidean_distance(self):$/;"	kind:member	line:37
+test_gini	../tree\tests\test_classification.py	/^    def test_gini(self):$/;"	kind:member	line:29
+test_information_gain	../tree\tests\test_classification.py	/^    def test_information_gain(self):$/;"	kind:member	line:24
+test_l_p_distance	../metrics\tests\test_pairwise.py	/^    def test_l_p_distance(self):$/;"	kind:member	line:32
+test_pairwise	../metrics\tests\test_pairwise.py	/^class test_pairwise(unittest.TestCase):$/;"	kind:class	line:10
+test_pairwise.py	../metrics\tests\test_pairwise.py	1;"	kind:file	line:1
+test_pearson_correlation_multi_feature	../metrics\tests\test_regression.py	/^    def test_pearson_correlation_multi_feature(self):$/;"	kind:member	line:14
+test_pearson_correlation_single_feature	../metrics\tests\test_regression.py	/^    def test_pearson_correlation_single_feature(self):$/;"	kind:member	line:8
+test_precision_score	../metrics\tests\test_classification.py	/^    def test_precision_score(self):$/;"	kind:member	line:8
+test_regression	../metrics\tests\test_regression.py	/^class test_regression(unittest.TestCase):$/;"	kind:class	line:6
+test_regression.py	../metrics\tests\test_regression.py	1;"	kind:file	line:1
+test_regression.py	../neighbors\tests\test_regression.py	1;"	kind:file	line:1
+unittest	../metrics\tests\test_classification.py	/^import unittest$/;"	kind:namespace	line:1
+unittest	../metrics\tests\test_pairwise.py	/^import unittest$/;"	kind:namespace	line:1
+unittest	../metrics\tests\test_regression.py	/^import unittest$/;"	kind:namespace	line:1
+unittest	../neighbors\tests\test_classification.py	/^import unittest$/;"	kind:namespace	line:1
+unittest	../neighbors\tests\test_regression.py	/^import unittest$/;"	kind:namespace	line:1
+unittest	../tree\tests\test_classification.py	/^import unittest$/;"	kind:namespace	line:1
