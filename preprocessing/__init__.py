@@ -15,7 +15,7 @@ class StandardScaler():
 
         pass
     def transform(self, X):
-        return (X - X.mean(axis=0))/a.std(axis=0)
+        return (X - X.mean(axis=0))/X.std(axis=0)
 
     def fit_transform(self, X):
         self.fit(X)
@@ -29,7 +29,7 @@ def scale(X):
     """
     means = X.mean(axis=0)
     stds = X.std(axis=0)
-    return (X - X.mean(axis=0))/a.std(axis=0)
+    return (X - X.mean(axis=0))/X.std(axis=0)
     
 
 
