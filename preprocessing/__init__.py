@@ -29,7 +29,7 @@ def scale(X):
     """
     means = X.mean(axis=0)
     stds = X.std(axis=0)
-    return (X - X.mean(axis=0))/X.std(axis=0)
+    return (X - X.mean(axis=0))/(X.std(axis=0)+0.0000001)
     
 
 
