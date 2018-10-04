@@ -72,11 +72,14 @@ class CountVectorizer():
         --------
         X : 2d array-like sparse matrix, shape(n_samples, n_features)
         """
-        text_matrix = np.zeros((len(raw_documents), self.dictionary_len))
+        text_matrix = np.zeros((len(raw_documents), self.dictionary_len+1))
         for i, document in enumerate(raw_documents):
             words = word_tokenizer(document)
             for word in words:
-                text_matrix[i,self.dictionary[word]] += 1
+                if word in self.dictionary:
+                    text_matrix[i,self.dictionary[word]] += 1
+                else :
+                    text_matrix[i,self.dictionary_len] = 1
         return text_matrix
     
     def fit_tranform(self, raw_documents):
@@ -137,7 +140,7 @@ class TfidfVectorizer():
         """
         # 计算矩阵维度
         row_d = len(raw_documents)
-        column_d = self.dictionary_len
+        column_d = self.dictionary_len+1
         # print(row_d, column_d)
         # 初始化矩阵
         num_mat = np.zeros((row_d, column_d))
@@ -147,7 +150,10 @@ class TfidfVectorizer():
         for row_index, row in enumerate(raw_documents):
             words = word_tokenizer(row)
             for word in words:
-                num_mat[row_index][[self.dictionary[word]]] += 1
+                if word in self.dictionary:
+                    num_mat[row_index][[self.dictionary[word]]] += 1
+                else :
+                    num_mat[row_index][[self.dictionary_len]] = 1
         # 计算df矩阵
         df_mat = num_mat/num_mat.sum(axis=1).reshape(row_d, 1)
         # 计算idf值 

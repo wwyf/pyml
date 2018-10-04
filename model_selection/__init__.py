@@ -90,6 +90,6 @@ class KFold():
 if __name__ == '__main__':
     X = np.array([1,2,3,4,5,6,7,8,9,90])
     # rs = ShuffleSplit(test_size=0.3)
-    rs = KFold(k_splits=5)
+    rs = KFold(k_splits=5, n_splits=2)
     for x_i, y_i in rs.split(X):
         print("train_index : {}, test_index : {}".format(x_i, y_i))
