@@ -49,8 +49,47 @@ class ShuffleSplit():
         """
         return self.n_splits
 
+class KFold():
+    """
+    Parameters
+    -------------
+    k_splits : int
+        number of folds
+    n_splits : int
+        number of kfold
+    """
+    def __init__(self, k_splits=3, n_splits=1, random_state=None):
+        self.n_splits = n_splits
+        self.k_splits = k_splits
+        if random_state is not None:
+            np.random.seed(random_state)
+    
+    def split(self, X):
+        """
+        Parameters
+        ------------
+
+        Yields
+        --------
+        train : 
+        test : 
+        """
+        n_samples = X.shape[0]
+        k_samples = int(n_samples/self.k_splits)
+        all_indices = np.arange(0, n_samples)
+        for j in range(0, self.n_splits):
+            np.random.shuffle(all_indices)
+            for i in range(0, self.k_splits):
+                test_indices = all_indices[i*k_samples:(i+1)*k_samples]
+                train_indices = np.hstack((all_indices[0:i*k_samples],all_indices[(i+1)*k_samples:]))
+                yield train_indices, test_indices
+    
+    def get_n_splits(self):
+        return self.n_splits
+
 if __name__ == '__main__':
     X = np.array([1,2,3,4,5,6,7,8,9,90])
-    rs = ShuffleSplit(test_size=0.3)
+    # rs = ShuffleSplit(test_size=0.3)
+    rs = KFold(k_splits=5)
     for x_i, y_i in rs.split(X):
         print("train_index : {}, test_index : {}".format(x_i, y_i))
