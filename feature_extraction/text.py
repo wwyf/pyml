@@ -82,7 +82,7 @@ class CountVectorizer():
                     text_matrix[i,self.dictionary_len] = 1
         return text_matrix
     
-    def fit_tranform(self, raw_documents):
+    def fit_transform(self, raw_documents):
         """
         Transform documents to document-term matrix.
         This is equivalent to fit followed by transform, but more efficiently implemented.
@@ -123,7 +123,7 @@ class TfidfVectorizer():
         self.dictionary_len = len(self.dictionary)
     
 
-    def fit_tranform(self, raw_documents):
+    def fit_transform(self, raw_documents):
         self.fit(raw_documents)
         return self.transform(raw_documents)
 
@@ -196,6 +196,6 @@ if __name__ == '__main__':
     raw_documents = [test_string, test_string2]
     sentences = ['europe retain trophy with big win', 'senate votes to revoke pensions']
     # cv = CountVectorizer()
-    # print(cv.fit_tranform(raw_documents))
+    # print(cv.fit_transform(raw_documents))
     tv = TfidfVectorizer()
-    print(tv.fit_tranform(raw_documents))
+    print(tv.fit_transform(raw_documents))
