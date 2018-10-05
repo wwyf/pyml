@@ -34,8 +34,11 @@ class LogisticClassifier():
 
         """
         parameters = {}
-        parameters['w'] = np.zeros((n_features, 1))
-        parameters['b'] = 0
+        # TODO: 参数如何初始化
+        parameters['w'] = np.random.normal(size=(n_features, 1))
+        parameters['b'] = np.random.normal()
+        # parameters['w'] = np.zeros((n_features, 1))
+        # parameters['b'] = 0
         return parameters
 
     def propagate(self, w, b, X, Y):
