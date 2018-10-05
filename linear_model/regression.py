@@ -102,7 +102,7 @@ class LinearRegression():
         w = self.parameters['w'] # shape(n_features+1, 1)
         X = np.hstack([np.ones((m, 1)), X_pred])
         # shape(n_samples, n_features+1)
-        Y_hat =  (w.T * X).sum(axis=1).reshape(m,1)
+        Y_hat =  (w.T * X).sum(axis=1).reshape(-1)
         return Y_hat
 
 if __name__ == '__main__':
