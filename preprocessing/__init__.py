@@ -14,12 +14,13 @@ class StandardScaler():
         self.std = X.std(axis=0)
 
         pass
-    def transform(self, X):
-        return (X - X.mean(axis=0))/X.std(axis=0)
+    def transform(self, X, mean=0, std=1):
+        normal =  (X - X.mean(axis=0))/X.std(axis=0)
+        return std * (normal + mean)
 
-    def fit_transform(self, X):
+    def fit_transform(self, X, mean=0, std=1):
         self.fit(X)
-        return self.transform(X)
+        return self.transform(X, mean, std)
 
 def scale(X):
     """
