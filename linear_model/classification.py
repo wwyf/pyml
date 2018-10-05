@@ -125,7 +125,7 @@ class LogisticClassifier():
         b = self.parameters['b']
         X = X_pred.T # shape(n_features, n_samples)
         A = sigmoid(np.dot(w.T, X) + b)
-        Y_pred = np.zeros(n_samples)
+        Y_pred = np.zeros(n_samples, dtype=int)
         for i in range(A.shape[1]):
             if A[0,i] > 0.5:
                 Y_pred[i] = 1

@@ -1,8 +1,11 @@
 import numpy as np
 
 class StandardScaler():
+    """
+    将数据归一化
+    """
     def __init__(self):
-        pass
+        return
     def fit(self, X : np.ndarray):
         """
         Parameters
@@ -12,10 +15,10 @@ class StandardScaler():
         """
         self.mean = X.mean(axis=0)
         self.std = X.std(axis=0)
-
-        pass
+        return
+    
     def transform(self, X, mean=0, std=1):
-        normal =  (X - X.mean(axis=0))/X.std(axis=0)
+        normal =  (X - X.mean(axis=0))/(X.std(axis=0)+0.00000001)
         return std * (normal + mean)
 
     def fit_transform(self, X, mean=0, std=1):
@@ -38,9 +41,6 @@ def scale(X):
 def z_score(df):
     return (df - df.mean())/(df.std())
 
-def StandardScaler():
-    pass
-
 def MinMaxScaler():
     pass
 def normalize():
@@ -48,7 +48,8 @@ def normalize():
 
 if __name__ == '__main__':
      a = np.array([[0,1,5],[3,9,1],[4,5,6]])
-     print(scale(a))
+     ss = StandardScaler()
+     print(ss.fit_transform(a))
 """
 [[-1.37281295 -1.22474487  0.46291005]
  [ 0.39223227  1.22474487 -1.38873015]
