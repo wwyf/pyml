@@ -36,13 +36,21 @@ def scale(X):
     return (X - X.mean(axis=0))/(X.std(axis=0)+0.0000001)
     
 
+def MinMaxScaler(X):
+    """
+    (X-X.min())/(X.max()-X.min())
+    
+    Parameters
+    -----------
+    X : 2d array-like shape(n_samples, n_features)
 
+    Returns
+    ----------
+    X : 2d array-like shape(n_samples, n_feature)
+        values will be in [0,1]
+    """
+    return (X - X.min(axis=0))/(X.max(axis=0)-X.min(axis=0))
 
-def z_score(df):
-    return (df - df.mean())/(df.std())
-
-def MinMaxScaler():
-    pass
 def normalize():
     pass
 
