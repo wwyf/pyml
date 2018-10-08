@@ -55,9 +55,11 @@ class CartTreeClassifierNode():
             递归过程中，要先记一下父节点的属性，可能有用
         """
         # TODO: 一些递归的返回条件
-        print(sub_X)
-        print(sub_Y)
-        c = input()
+
+        # print(sub_X)
+        # print(sub_Y)
+        # c = input()
+
         # 如果此时数据集为空
         if len(sub_X) == 0:
             self.set_leaf(parent_class.item())
@@ -70,14 +72,14 @@ class CartTreeClassifierNode():
         # 从sub_Y里面取出现次数最多的，作为该节点的结果
         self.current_node_class = np.unique(sub_Y)[np.argmax(np.unique(sub_Y, return_counts=True)[1])]
 
-        print(self.current_node_class)
-        print('sub_X', sub_X.shape[0]) # NOTE: 不应该拿len(sub_X)
-        c = input()
+        # print(self.current_node_class)
+        # print('sub_X', sub_X.shape[0]) # NOTE: 不应该拿len(sub_X)
+        # c = input()
 
         # TODO: 可能还有其他的返回条件
         # 若剩下没有分的样例就只剩下3个了，就不再去细分了，而是将这三个强行当成一类
         if sub_X.shape[0] <= 2:
-            print('return point 4!')
+            # print('return point 4!')
             self.set_leaf(self.current_node_class)
             return
 
@@ -101,15 +103,15 @@ class CartTreeClassifierNode():
                         continue
                     left_branch_Y = sub_Y[sub_X[:,this_feature_index]<=this_feature_value]
                     right_branch_Y = sub_Y[sub_X[:,this_feature_index]>this_feature_value]
-                    print(left_branch_Y)
-                    print(right_branch_Y)
+                    # print(left_branch_Y)
+                    # print(right_branch_Y)
                 elif self.column_flags[this_feature_index]  == 'discrete':
                     # 如果当前列的flag说明是离散的
                     left_branch_Y = sub_Y[sub_X[:,this_feature_index]==this_feature_value]
                     right_branch_Y = sub_Y[sub_X[:,this_feature_index]!=this_feature_value]
                 this_feature_gini_value = len(left_branch_Y)/n_samples * gini(left_branch_Y) + len(right_branch_Y)/n_samples * gini(right_branch_Y)
-                print(this_feature_index, ' ', this_feature_value, ' ', this_feature_gini_value)
-                c = input()
+                # print(this_feature_index, ' ', this_feature_value, ' ', this_feature_gini_value)
+                # c = input()
                 # 如果以这个值为分割点的gini指数更小，那就更新best参数
                 if this_feature_gini_value < best_gini_value:
                     best_gini_value = this_feature_gini_value
@@ -119,9 +121,9 @@ class CartTreeClassifierNode():
         self.feature_column = best_feature_column
         self.split_value = best_split_point
 
-        print('self.feature_column:', self.feature_column)
-        print('self.split_value', self.split_value)
-        c=input()
+        # print('self.feature_column:', self.feature_column)
+        # print('self.split_value', self.split_value)
+        # c=input()
 
         # 划分数据集
         if self.column_flags[this_feature_index] == 'continuous':
@@ -200,8 +202,8 @@ class CartTreeClassifierNode():
             return graph
         left_tree_str = self.left_tree.get_node_str()
         right_tree_str = self.right_tree.get_node_str()
-        print('left', left_tree_str)
-        print('right', right_tree_str)
+        # print('left', left_tree_str)
+        # print('right', right_tree_str)
 
         graph.add_edge(Edge(src=root, dst=left_tree_str))
         graph = self.left_tree._print_tree(graph)
