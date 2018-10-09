@@ -179,8 +179,8 @@ class DecisionTreeRegressor():
     使用cart方法，二叉树
     TODO: 没有写剪枝
     """
-    def __init__(self):
-        pass
+    def __init__(self, max_node_size=10):
+        self.max_node_size = max_node_size
 
     def fit(self, X, Y, feature_names=None):
         """
@@ -193,7 +193,7 @@ class DecisionTreeRegressor():
         n_features = X.shape[1]
         if feature_names is None:
             feature_names = [str(i) for i in range(n_features)]
-        self.root_node = CartTreeRegressionNode(feature_names)
+        self.root_node = CartTreeRegressionNode(feature_names, max_node_size=self.max_node_size)
         self.root_node.fit_data(X, Y,None)
 
     def predict(self, X_pred):
