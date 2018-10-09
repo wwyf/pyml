@@ -172,7 +172,46 @@ class CartTreeRegressionNode():
         graph.add_edge(Edge(src=root, dst=right_tree_str))
         graph = self.right_tree._print_tree(graph)
         return graph
-        
+
+class DecisionTreeRegressor():
+    """
+    使用cart方法，二叉树
+    TODO: 没有写剪枝
+    """
+    def __init__(self):
+        pass
+
+    def fit(self, X, Y, feature_names=None):
+        """
+        Parameters
+        -----------
+        X : 2d array-like
+        Y : 1d array-like
+        """
+        n_samples = X.shape[0]
+        n_features = X.shape[1]
+        if feature_names is None:
+            feature_names = [str(i) for i in range(n_features)]
+        self.root_node = CartTreeRegressionNode(feature_names)
+        self.root_node.fit_data(X, Y,None)
+
+    def predict(self, X_pred):
+        """
+        Parameters
+        ----------
+        X_pred : 2d array-like shape(n_samples, n_features)
+
+        Returns
+        -------
+        Y_pred : 1d array-like shape(n_samples, )
+
+        """
+        n_samples = X_pred.shape[0]
+        Y_pred = np.zeros((n_samples))
+        for i,x in enumerate(X_pred):
+            Y_pred[i] = self.root_node.get_label(x)
+        return Y_pred
+
 if __name__ == '__main__':
     a = np.array([[1,4, 0.4],
                   [2,9, 0.6],

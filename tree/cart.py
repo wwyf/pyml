@@ -210,8 +210,6 @@ class CartTreeClassifierNode():
         graph.add_edge(Edge(src=root, dst=right_tree_str))
         graph = self.right_tree._print_tree(graph)
         return graph
-        
-
 
 
 if __name__ == '__main__':
