@@ -14,7 +14,7 @@ class CartTreeRegressionNode():
     """
     Cart的回归树，默认输入数据都是连续的
     """
-    def __init__(self, feature_names : list, cost_func=square_error):
+    def __init__(self, feature_names : list, cost_func=square_error, max_node_size=10):
         """
         feature_names : list of string
             就是特征名字的列表啦，与矩阵的列号对应，一直都不变
@@ -29,6 +29,7 @@ class CartTreeRegressionNode():
         self.left_tree = None
         self.right_tree = None
         self.current_node_value = None
+        self.max_node_size = max_node_size
     def fit_data(self, sub_X, sub_Y, parent_class):
         """
         sub_X : 2d array-like shape(n_samples, n_features)
@@ -56,7 +57,7 @@ class CartTreeRegressionNode():
 
         # TODO: 可能还有其他的返回条件
         # 若剩下没有分的样例就只剩下2个了，就不再去细分了，而是直接取这2个点的均值
-        if sub_X.shape[0] <= 2:
+        if sub_X.shape[0] <= self.max_node_size:
             # print('return point 4!')
             self.set_leaf(self.current_node_value)
             return

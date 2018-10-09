@@ -8,12 +8,14 @@ class GradientBoostingRegression():
         learning_rate=0.1,
         base_estimator=DecisionTreeRegressor,
         n_estimators=500,
-        random_state=None
+        random_state=None,
+        max_tree_node_size=10
     ):
         self.estimators = []
         self.n_estimators = n_estimators
         self.base_estimator = base_estimator
         self.learning_rate = learning_rate
+        self.max_tree_node_size = max_tree_node_size
         self.parameters = {
             'f' : [],
             'lr' : []
@@ -42,20 +44,20 @@ class GradientBoostingRegression():
         lr = self.learning_rate
 
         # 创建一个新回归器，去拟合梯度
-        new_estimator = self.base_estimator()
+        new_estimator = self.base_estimator(max_node_size=self.max_tree_node_size)
         new_estimator.fit(X,d_fx)
         self.parameters['f'].append(new_estimator)
         self.parameters['lr'].append(lr)
         return cost
 
     def fit(self, X, Y, watch=False):
-        init_estimator = self.base_estimator()
+        init_estimator = self.base_estimator(max_node_size=self.max_tree_node_size)
         init_estimator.fit(X,Y)
         self.parameters['f'].append(init_estimator)
         self.parameters['lr'].append(1)
         for i in range(self.n_estimators):
             cost = self.optimizer(X,Y)
-            if i % 10 == 0:
+            if i % 1 == 0:
                 print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
 
     def predict(self, X_pred):
