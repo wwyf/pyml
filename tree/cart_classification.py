@@ -10,8 +10,6 @@ from pydot import Dot, Edge, Node
 #         1. 创建一个分裂点，左：小于这个分裂点的数据 右：大于这个分裂点的数据
 #         2. 计算分裂成本：同上
 
-
-
 def gini(l):
     """
     Parameters
@@ -29,7 +27,7 @@ def gini(l):
     return l_h
 
 class CartTreeClassifierNode():
-    def __init__(self, feature_names : list, column_flags : list, cost_func=gini):
+    def __init__(self, feature_names : list, column_flags : list, max_node_size=10, cost_func=gini):
         """
         feature_names : list of string
             就是特征名字的列表啦，与矩阵的列号对应，一直都不变
@@ -37,6 +35,7 @@ class CartTreeClassifierNode():
             'discrete','continuous'
         cost_func : cost function
         """
+        self.max_node_size = max_node_size
         self.feature_names = feature_names
         self.column_flags = column_flags
         self.cost_func = gini
@@ -71,6 +70,10 @@ class CartTreeClassifierNode():
 
         # 从sub_Y里面取出现次数最多的，作为该节点的结果
         self.current_node_class = np.unique(sub_Y)[np.argmax(np.unique(sub_Y, return_counts=True)[1])]
+
+        if len(sub_X) <= self.max_node_size:
+            self.set_leaf(self.current_node_class)
+            return
 
         # print(self.current_node_class)
         # print('sub_X', sub_X.shape[0]) # NOTE: 不应该拿len(sub_X)
@@ -212,6 +215,45 @@ class CartTreeClassifierNode():
         return graph
 
 
+class DecisionTreeClassifier():
+    """
+    使用cart方法，二叉树
+    TODO: 没有写剪枝
+    """
+    def __init__(self, max_node_size=10):
+        self.max_node_size = max_node_size
+
+    def fit(self, X, Y, column_flags, feature_names=None):
+        """
+        Parameters
+        -----------
+        X : 2d array-like
+        Y : 1d array-like
+        """
+        n_samples = X.shape[0]
+        n_features = X.shape[1]
+        if feature_names is None:
+            feature_names = [str(i) for i in range(n_features)]
+        self.root_node = CartTreeClassifierNode(feature_names,column_flags, max_node_size=self.max_node_size)
+        self.root_node.fit_data(X, Y,None)
+
+    def predict(self, X_pred):
+        """
+        Parameters
+        ----------
+        X_pred : 2d array-like shape(n_samples, n_features)
+
+        Returns
+        -------
+        Y_pred : 1d array-like shape(n_samples, )
+
+        """
+        n_samples = X_pred.shape[0]
+        Y_pred = np.zeros((n_samples))
+        for i,x in enumerate(X_pred):
+            Y_pred[i] = self.root_node.get_label(x)
+        return Y_pred
+
 if __name__ == '__main__':
     a = np.array([[1,4, 0.4],
                   [2,9, 0.6],
@@ -221,9 +263,9 @@ if __name__ == '__main__':
     b = np.array([0,0,1,1,1])
     flags = ['discrete','continuous','continuous']
     names = ['1','2','3']
-    clf = CartTreeClassifierNode(names, flags)
-    clf.fit_data(a, b, None)
-    clf.print_tree('test.png')
-    print(clf.get_label(np.array([2,5, 0.6])))
-    print(clf.get_label(np.array([1,4,0.4])))
-    print(clf.get_label(np.array([1,5, 0.8])))
+    clf = DecisionTreeClassifier()
+    clf.fit(a,b,flags,names)
+    clf.root_node.print_tree('test.png')
+    print(clf.predict(np.array([[2,5, 0.6]])))
+    print(clf.predict(np.array([[1,4,0.4]])))
+    print(clf.predict(np.array([[1,5, 0.8]])))
