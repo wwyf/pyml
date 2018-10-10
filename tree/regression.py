@@ -1,5 +1,13 @@
 import numpy as np
 from pydot import Dot, Edge, Node
+from pyml.logger import logger
+
+def generate_counter(counter=0):
+    while True:
+        yield counter
+        counter += 1
+
+generate_id = generate_counter()
 
 def square_error(l):
     """
@@ -20,6 +28,7 @@ class CartTreeRegressionNode():
             就是特征名字的列表啦，与矩阵的列号对应，一直都不变
         cost_func : cost function
         """
+        self.id = next(generate_id)
         self.feature_names = feature_names
         self.cost_func = cost_func
         self.is_leaf = False
@@ -30,6 +39,9 @@ class CartTreeRegressionNode():
         self.right_tree = None
         self.current_node_value = None
         self.max_node_size = max_node_size
+        logger.debug('self.id : {}'.format(self.id) +
+                    '\nself.feature_names : {}'.format(self.feature_names) +
+                    '\nself.max_node_size : {}'.format(self.max_node_size))
     def fit_data(self, sub_X, sub_Y, parent_class):
         """
         sub_X : 2d array-like shape(n_samples, n_features)
@@ -39,22 +51,28 @@ class CartTreeRegressionNode():
         """
         # TODO: 一些递归的返回条件
 
+        logger.info('training...\ncurrent id : {}\ncurrent data size : {}'.format(self.id, sub_X.shape[0]))
+
+        logger.debug(
+            'X : \n{}\nY : {}'.format(sub_X, sub_Y)+'\n'+
+            'parent_class : {}'.format(parent_class))
 
         # 如果此时数据集为空
         if len(sub_X) == 0:
+            logger.debug('sub_X is empty ! ')
             self.set_leaf(parent_class.item())
             return
 
         # 从sub_Y里面取均值，作为该节点的结果
         self.current_node_value = np.mean(sub_Y).item()
 
-        # print(self.current_node_value)
-        # print('sub_X', sub_X.shape[0]) # NOTE: 不应该拿len(sub_X)
-        # c = input()
+        logger.debug('self.current_node_value : {}'.format(self.current_node_value))
+
 
         # TODO: 可能还有其他的返回条件
         # 若剩下没有分的样例就只剩下2个了，就不再去细分了，而是直接取这2个点的均值
         if sub_X.shape[0] <= self.max_node_size:
+            logger.debug('sub_X is so small. n_samples : {}'.format(sub_X.shape[0]))
             self.set_leaf(self.current_node_value)
             return
 
@@ -91,6 +109,8 @@ class CartTreeRegressionNode():
         self.feature_column = best_feature_column
         self.split_value = best_split_point
 
+        logger.debug('get the best split point : {}:{}/{}'.format(self.feature_column, self.feature_names[self.feature_column], self.split_value))
+
         # print('self.feature_column:', self.feature_column)
         # print('self.split_value', self.split_value)
         # c=input()
@@ -104,6 +124,10 @@ class CartTreeRegressionNode():
         best_left_branch_Y = sub_Y[sub_X[:,best_feature_column]<=best_split_point]
         best_right_branch_X = sub_X[sub_X[:,best_feature_column]>best_split_point,:]
         best_right_branch_Y = sub_Y[sub_X[:,best_feature_column]>best_split_point]
+
+
+        logger.debug('get left branch X : \n{}\nget left branch Y : {}'.format(best_left_branch_X, best_left_branch_Y))
+        logger.debug('get right branch X : \n{}\nget right branch Y : {}'.format(best_right_branch_X, best_right_branch_Y))
 
         self.left_tree = CartTreeRegressionNode(self.feature_names, max_node_size=self.max_node_size, cost_func=self.cost_func)
         self.left_tree.fit_data(best_left_branch_X, best_left_branch_Y, self.current_node_value)
@@ -151,10 +175,10 @@ class CartTreeRegressionNode():
     
     def get_node_str(self):
         if self.is_leaf:
-            return str(self.current_node_value) + str(np.random.normal())[:5]
+            return "id : {}\n label: {}".format(self.id,self.current_node_value)
         else:
-            return 'name:'+ self.feature_names[self.feature_column]+'\n'+self.split_op+' '+str(self.split_value)
-    
+            return 'id : {}\nfesture : {}/{}\n{} {}'.format(self.id, self.feature_column, self.feature_names[self.feature_column], self.split_op, self.split_value)
+
     def _print_tree(self,graph):
         root = self.get_node_str()
         if self.is_leaf:

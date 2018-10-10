@@ -1,7 +1,9 @@
 import numpy as np
 from pyml.tree.regression import DecisionTreeRegressor
+from pyml.logger import logger
 
 if __name__ == '__main__':
+    logger.setLevel(10)
     mini_train_X = np.array([
         [1,2,3,4,5,6,7,8],
         [2,3,4,5,6,7,8,9],
@@ -21,6 +23,7 @@ if __name__ == '__main__':
     mini_standard_out_Y = np.array([
         2.5,4.5
     ])
+    feature_names = ['feat1','feat2','feat3','feat4','feat5','feat6','feat7']
     rgs = DecisionTreeRegressor(max_node_size=2)
     rgs.fit(mini_train_X,mini_train_Y)
     print(rgs.predict(mini_test_X))
