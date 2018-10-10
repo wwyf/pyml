@@ -1,5 +1,7 @@
 import numpy as np
 from pydot import Dot, Edge, Node
+from pyml.logger import logger
+
 # 这里要实现CART树
 
 # 1. 如何选择分裂点？
@@ -9,6 +11,8 @@ from pydot import Dot, Edge, Node
 #     2. 对于连续性数据：先对数据进行排序， 遍历每一个可能的分裂点
 #         1. 创建一个分裂点，左：小于这个分裂点的数据 右：大于这个分裂点的数据
 #         2. 计算分裂成本：同上
+
+# CART回归树，如何更robust？
 
 def gini(l):
     """
