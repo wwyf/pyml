@@ -21,7 +21,7 @@ if __name__ == '__main__':
     mini_standard_out_Y = np.array([
         2.5,4.5
     ])
-    rgs = DecisionTreeRegressor()
+    rgs = DecisionTreeRegressor(max_node_size=2)
     rgs.fit(mini_train_X,mini_train_Y)
     print(rgs.predict(mini_test_X))
     rgs.root_node.print_tree('test.png')

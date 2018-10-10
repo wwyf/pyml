@@ -14,7 +14,7 @@ class CartTreeRegressionNode():
     """
     Cart的回归树，默认输入数据都是连续的
     """
-    def __init__(self, feature_names : list, cost_func=square_error, max_node_size=10):
+    def __init__(self, feature_names : list, max_node_size=10, cost_func=square_error):
         """
         feature_names : list of string
             就是特征名字的列表啦，与矩阵的列号对应，一直都不变
@@ -58,7 +58,6 @@ class CartTreeRegressionNode():
         # TODO: 可能还有其他的返回条件
         # 若剩下没有分的样例就只剩下2个了，就不再去细分了，而是直接取这2个点的均值
         if sub_X.shape[0] <= self.max_node_size:
-            # print('return point 4!')
             self.set_leaf(self.current_node_value)
             return
 
@@ -109,9 +108,9 @@ class CartTreeRegressionNode():
         best_right_branch_X = sub_X[sub_X[:,best_feature_column]>best_split_point,:]
         best_right_branch_Y = sub_Y[sub_X[:,best_feature_column]>best_split_point]
 
-        self.left_tree = CartTreeRegressionNode(self.feature_names, cost_func=self.cost_func)
+        self.left_tree = CartTreeRegressionNode(self.feature_names, max_node_size=self.max_node_size, cost_func=self.cost_func)
         self.left_tree.fit_data(best_left_branch_X, best_left_branch_Y, self.current_node_value)
-        self.right_tree = CartTreeRegressionNode(self.feature_names, cost_func=self.cost_func)
+        self.right_tree = CartTreeRegressionNode(self.feature_names,max_node_size=self.max_node_size, cost_func=self.cost_func)
         self.right_tree.fit_data(best_right_branch_X, best_right_branch_Y, self.current_node_value)
     def set_leaf(self, current_value):
         self.is_leaf = True

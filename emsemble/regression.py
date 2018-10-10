@@ -35,7 +35,7 @@ class GradientBoostingRegression():
 
         # 计算残差 or 计算梯度
         d_fx = cur_Y_pred - Y
-        # print('d_fx : ', d_fx)
+        print('d_fx : ', d_fx)
 
         # 梯度取负数
         d_fx = - d_fx

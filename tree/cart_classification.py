@@ -70,7 +70,6 @@ class CartTreeClassifierNode():
 
         # 从sub_Y里面取出现次数最多的，作为该节点的结果
         self.current_node_class = np.unique(sub_Y)[np.argmax(np.unique(sub_Y, return_counts=True)[1])]
-
         if len(sub_X) <= self.max_node_size:
             self.set_leaf(self.current_node_class)
             return
@@ -147,9 +146,9 @@ class CartTreeClassifierNode():
             best_right_branch_X = sub_X[sub_X[:,best_feature_column]!=best_split_point,:]
             best_right_branch_Y = sub_Y[sub_X[:,best_feature_column]!=best_split_point]
 
-        self.left_tree = CartTreeClassifierNode(self.feature_names, self.column_flags, cost_func=self.cost_func)
+        self.left_tree = CartTreeClassifierNode( self.feature_names, self.column_flags, max_node_size=self.max_node_size, cost_func=self.cost_func)
         self.left_tree.fit_data(best_left_branch_X, best_left_branch_Y, self.current_node_class)
-        self.right_tree = CartTreeClassifierNode(self.feature_names, self.column_flags, self.cost_func)
+        self.right_tree = CartTreeClassifierNode(self.feature_names, self.column_flags, max_node_size=self.max_node_size, cost_func=self.cost_func)
         self.right_tree.fit_data(best_right_branch_X, best_right_branch_Y, self.current_node_class)
     def set_leaf(self, current_class):
         self.is_leaf = True
