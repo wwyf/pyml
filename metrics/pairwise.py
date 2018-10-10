@@ -75,6 +75,29 @@ def euclidean_distance(vec1, vec2):
     assert(vec1.shape[1] == vec2.shape[1])
     return np.linalg.norm(vec1-vec2)
 
+def absolute_distance(vec1, vec2):
+    """the euclidean distance of two vectors
+
+    Parameters
+    -----------
+
+    vec1: shape (1, n_features) or shape(n_features,)
+
+    vec2: shape (1, n_features) or shape(n_features,)
+
+    Returns
+    -------
+
+    distances : shape (1, 1)
+
+    """
+    vec1 = vec1.reshape((1,-1))
+    vec2 = vec2.reshape((1,-1))
+    assert(vec1.shape[0] == 1)
+    assert(vec2.shape[0] == 1)
+    assert(vec1.shape[1] == vec2.shape[1])
+    return np.abs(vec1-vec2).sum()
+
 def l_p_distance(vec1, vec2,p=1):
     """ calculate the p(default 1) norm of two vectors
 

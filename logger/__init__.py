@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger('simple_example')
 formatter = logging.Formatter('[%(levelname)8s] - [%(module)10s] - [%(lineno)3d] - [%(funcName)10s] \n%(message)s\n')
 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 ch = logging.StreamHandler()
 # ch.setLevel(logging.DEBUG)
 ch.setFormatter(formatter)

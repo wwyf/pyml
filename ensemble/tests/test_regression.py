@@ -1,6 +1,7 @@
 import numpy as np
-from pyml.emsemble.regression import GradientBoostingRegression
+from pyml.ensemble.regression import GradientBoostingRegression
 from pyml.tree.regression import DecisionTreeRegressor
+from pyml.logger import logger
 
 
 if __name__ == '__main__':
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     mini_standard_out_Y = np.array([
         2.5,4.5
     ])
-    # rgs = GradientBoostingRegression()
-    rgs = GradientBoostingRegression(learning_rate=0.1, base_estimator=DecisionTreeRegressor, max_tree_node_size=2, n_estimators=200)
+    # logger.setLevel(10)
+    rgs = GradientBoostingRegression(loss='huber', learning_rate=0.05, base_estimator=DecisionTreeRegressor, max_tree_node_size=2, n_estimators=500)
     rgs.fit(mini_train_X,mini_train_Y)
     print(rgs.predict(mini_test_X))

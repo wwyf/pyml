@@ -3,6 +3,7 @@ import numpy as np
 from math import sqrt
 
 from pyml.metrics.pairwise import euclidean_distance
+from pyml.metrics.pairwise import absolute_distance
 from pyml.metrics.pairwise import l_p_distance
 from pyml.metrics.pairwise import cosine_similarity
 from pyml.metrics.pairwise import cosine_distance
@@ -38,6 +39,11 @@ class test_pairwise(unittest.TestCase):
         v1 = np.array([[1,1]])
         v2 = np.array([[0,0]])
         self.assertAlmostEqual(euclidean_distance(v1,v2),1.41421356)
+    
+    def test_absolute_distance(self):
+        v1 = np.array([[2,4]])
+        v2 = np.array([[1,6]])
+        self.assertAlmostEqual(absolute_distance(v1, v2), 3)
         
 if __name__ == '__main__':
     unittest.main()
