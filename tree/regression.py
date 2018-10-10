@@ -39,9 +39,6 @@ class CartTreeRegressionNode():
         """
         # TODO: 一些递归的返回条件
 
-        # print(sub_X)
-        # print(sub_Y)
-        # c = input()
 
         # 如果此时数据集为空
         if len(sub_X) == 0:

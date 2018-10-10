@@ -14,6 +14,13 @@ from pyml.logger import logger
 
 # CART回归树，如何更robust？
 
+def generate_counter(counter=0):
+    while True:
+        yield counter
+        counter += 1
+
+generate_id = generate_counter()
+
 def gini(l):
     """
     Parameters
@@ -39,6 +46,7 @@ class CartTreeClassifierNode():
             'discrete','continuous'
         cost_func : cost function
         """
+        self.id = next(generate_id)
         self.max_node_size = max_node_size
         self.feature_names = feature_names
         self.column_flags = column_flags
@@ -50,6 +58,10 @@ class CartTreeClassifierNode():
         self.left_tree = None
         self.right_tree = None
         self.current_node_class = None
+        logger.debug('self.id : {}'.format(self.id) +
+                    '\nself.max_node_size : {}'.format(self.max_node_size) +
+                    '\nself.feature_names : {}'.format(self.feature_names) +
+                    '\nself.column_flags : {}'.format(self.column_flags))
     def fit_data(self, sub_X, sub_Y, parent_class):
         """
         sub_X : 2d array-like shape(n_samples, n_features)
@@ -57,35 +69,31 @@ class CartTreeClassifierNode():
         paranet_class : int
             递归过程中，要先记一下父节点的属性，可能有用
         """
-        # TODO: 一些递归的返回条件
 
-        # print(sub_X)
-        # print(sub_Y)
-        # c = input()
+        logger.info('training...\ncurrent id : {}\ncurrent data size : {}'.format(self.id, sub_X.shape[0]))
+
+        logger.debug(
+            'X : \n{}\nY : {}'.format(sub_X, sub_Y)+'\n'+
+            'parent_class : {}'.format(parent_class))
 
         # 如果此时数据集为空
         if len(sub_X) == 0:
+            logger.debug('sub_X is empty ! ')
             self.set_leaf(parent_class.item())
             return
         # 如果此时分类的Y都是类似的，已经能够确定分类结果
         if len((np.unique(sub_Y))) <= 1:
+            logger.debug('sub_Y is all the same ! ')
             self.set_leaf((sub_Y[0].item()))
             return
 
         # 从sub_Y里面取出现次数最多的，作为该节点的结果
         self.current_node_class = np.unique(sub_Y)[np.argmax(np.unique(sub_Y, return_counts=True)[1])]
-        if len(sub_X) <= self.max_node_size:
-            self.set_leaf(self.current_node_class)
-            return
 
-        # print(self.current_node_class)
-        # print('sub_X', sub_X.shape[0]) # NOTE: 不应该拿len(sub_X)
-        # c = input()
+        logger.debug('self.current_node_class : {}'.format(self.current_node_class))
 
-        # TODO: 可能还有其他的返回条件
-        # 若剩下没有分的样例就只剩下3个了，就不再去细分了，而是将这三个强行当成一类
-        if sub_X.shape[0] <= 2:
-            # print('return point 4!')
+        if sub_X.shape[0] <= self.max_node_size:
+            logger.debug('sub_X is so small. n_samples : {}'.format(sub_X.shape[0]))
             self.set_leaf(self.current_node_class)
             return
 
@@ -94,6 +102,8 @@ class CartTreeClassifierNode():
         best_gini_value = 9999999
         best_feature_column = None
         best_split_point = None
+
+        logger.debug('in find the best split feature...')
 
         for this_feature_index in range(0,len(self.feature_names)):
             this_feature_values = np.unique(sub_X[:, this_feature_index])
@@ -109,15 +119,14 @@ class CartTreeClassifierNode():
                         continue
                     left_branch_Y = sub_Y[sub_X[:,this_feature_index]<=this_feature_value]
                     right_branch_Y = sub_Y[sub_X[:,this_feature_index]>this_feature_value]
-                    # print(left_branch_Y)
-                    # print(right_branch_Y)
                 elif self.column_flags[this_feature_index]  == 'discrete':
                     # 如果当前列的flag说明是离散的
                     left_branch_Y = sub_Y[sub_X[:,this_feature_index]==this_feature_value]
                     right_branch_Y = sub_Y[sub_X[:,this_feature_index]!=this_feature_value]
                 this_feature_gini_value = len(left_branch_Y)/n_samples * gini(left_branch_Y) + len(right_branch_Y)/n_samples * gini(right_branch_Y)
-                # print(this_feature_index, ' ', this_feature_value, ' ', this_feature_gini_value)
-                # c = input()
+
+                logger.debug('in feature({}:{}) value({}) gini_value({})\nleft_branch_Y : {}\nright_branch_Y : {}'.format(this_feature_index,self.feature_names[this_feature_index], this_feature_value, this_feature_gini_value, left_branch_Y, right_branch_Y))
+
                 # 如果以这个值为分割点的gini指数更小，那就更新best参数
                 if this_feature_gini_value < best_gini_value:
                     best_gini_value = this_feature_gini_value
@@ -126,6 +135,7 @@ class CartTreeClassifierNode():
         
         self.feature_column = best_feature_column
         self.split_value = best_split_point
+        logger.debug('get the best split point : {}:{}/{}'.format(self.feature_column, self.feature_names[self.feature_column], self.split_value))
 
         # print('self.feature_column:', self.feature_column)
         # print('self.split_value', self.split_value)
@@ -150,10 +160,13 @@ class CartTreeClassifierNode():
             best_right_branch_X = sub_X[sub_X[:,best_feature_column]!=best_split_point,:]
             best_right_branch_Y = sub_Y[sub_X[:,best_feature_column]!=best_split_point]
 
+        logger.debug('get left branch X : \n{}\nget left branch Y : {}'.format(best_left_branch_X, best_left_branch_Y))
+
         self.left_tree = CartTreeClassifierNode( self.feature_names, self.column_flags, max_node_size=self.max_node_size, cost_func=self.cost_func)
         self.left_tree.fit_data(best_left_branch_X, best_left_branch_Y, self.current_node_class)
         self.right_tree = CartTreeClassifierNode(self.feature_names, self.column_flags, max_node_size=self.max_node_size, cost_func=self.cost_func)
         self.right_tree.fit_data(best_right_branch_X, best_right_branch_Y, self.current_node_class)
+
     def set_leaf(self, current_class):
         self.is_leaf = True
         self.current_node_class = current_class
@@ -198,9 +211,9 @@ class CartTreeClassifierNode():
     
     def get_node_str(self):
         if self.is_leaf:
-            return str(self.current_node_class) + str(np.random.normal())[:5]
+            return "id : {}\n label: {}".format(self.id,self.current_node_class)
         else:
-            return 'name:'+ self.feature_names[self.feature_column]+'\n'+self.split_op+' '+str(self.split_value)
+            return 'id : {}\nfesture : {}/{}\n{} {}'.format(self.id, self.feature_column, self.feature_names[self.feature_column], self.split_op, self.split_value)
     
     def _print_tree(self,graph):
         root = self.get_node_str()
@@ -233,11 +246,14 @@ class DecisionTreeClassifier():
         X : 2d array-like
         Y : 1d array-like
         """
+        logger.debug('X : \n{}'.format(X))
+        logger.debug('Y : {}'.format(Y))
         n_samples = X.shape[0]
         n_features = X.shape[1]
         if feature_names is None:
             feature_names = [str(i) for i in range(n_features)]
-        self.root_node = CartTreeClassifierNode(feature_names,column_flags, max_node_size=self.max_node_size)
+        logger.debug('feature_names : {}'.format(feature_names))
+        self.root_node = CartTreeClassifierNode(feature_names, column_flags, max_node_size=self.max_node_size)
         self.root_node.fit_data(X, Y,None)
 
     def predict(self, X_pred):
@@ -265,8 +281,8 @@ if __name__ == '__main__':
                   [1,8, 0.46]])
     b = np.array([0,0,1,1,1])
     flags = ['discrete','continuous','continuous']
-    names = ['1','2','3']
-    clf = DecisionTreeClassifier()
+    names = ['feat1','feat2','feat3']
+    clf = DecisionTreeClassifier(max_node_size=1)
     clf.fit(a,b,flags,names)
     clf.root_node.print_tree('test.png')
     print(clf.predict(np.array([[2,5, 0.6]])))
