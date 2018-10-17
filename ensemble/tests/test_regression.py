@@ -25,6 +25,8 @@ if __name__ == '__main__':
         2.5,4.5
     ])
     # logger.setLevel(10)
-    rgs = GradientBoostingRegression(loss='huber', learning_rate=0.05, base_estimator=DecisionTreeRegressor, max_tree_node_size=2, n_estimators=500)
+    rgs = GradientBoostingRegression(loss='ls', learning_rate=0.15, base_estimator=DecisionTreeRegressor, max_tree_node_size=2, n_estimators=200)
     rgs.fit(mini_train_X,mini_train_Y)
     print(rgs.predict(mini_test_X))
+    # rgs = GradientBoostingRegression(loss='lad', learning_rate=0.05, base_estimator=DecisionTreeRegressor, max_tree_node_size=2, n_estimators=500)
+    # rgs = GradientBoostingRegression(loss='huber', learning_rate=0.05, base_estimator=DecisionTreeRegressor, max_tree_node_size=2, n_estimators=500)
