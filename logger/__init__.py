@@ -10,9 +10,9 @@ ch = logging.StreamHandler()
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-# fl = logging.FileHandler('temp.log',mode='w')
+fl = logging.FileHandler('temp.log',mode='a')
 # fl.setLevel(logging.DEBUG)
-# fl.setFormatter(formatter)
-# logger.addHandler(fl)
+fl.setFormatter(formatter)
+logger.addHandler(fl)
 
 # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s \n%(filename)s - %(module)s - %(funcName)s - %(lineno)d \n%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')

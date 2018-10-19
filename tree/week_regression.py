@@ -51,7 +51,7 @@ class CartTreeRegressionNode():
         """
         # TODO: 一些递归的返回条件
 
-        logger.debug('training...\ncurrent id : {}\ncurrent data size : {}'.format(self.id, sub_X.shape[0]))
+        logger.info('training...\ncurrent id : {}\ncurrent data size : {}'.format(self.id, sub_X.shape[0]))
 
         logger.debug(
             'X : \n{}\nY : {}'.format(sub_X, sub_Y)+'\n'+

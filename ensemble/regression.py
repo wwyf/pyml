@@ -1,6 +1,7 @@
 from pyml.tree.regression import DecisionTreeRegressor
 from pyml.metrics.pairwise import euclidean_distance
 from pyml.metrics.pairwise import absolute_distance
+from pyml.metrics.regression import pearson_correlation
 import numpy as np
 from pyml.logger import logger
 
@@ -92,7 +93,7 @@ class GradientBoostingRegression():
         self.parameters['lr'].append(lr)
         return cost
 
-    def fit(self, X, Y, watch=False):
+    def fit(self, X, Y,watch=False):
         logger.debug('X : \n{} Y : {}'.format(X, Y))
         init_estimator = self.base_estimator(max_node_size=self.max_tree_node_size)
         init_estimator.fit(X,Y)
@@ -101,7 +102,24 @@ class GradientBoostingRegression():
         for i in range(self.n_estimators):
             cost = self.optimizer(X,Y)
             if i % 1 == 0:
-                print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
+                logger.info('train {}/{}  current cost: {}, test: {}'.format(i,self.n_estimators,cost))
+                # print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
+
+    def fit_and_valid(self, X, Y,X_valid,Y_valid, watch=False):
+        logger.debug('X : \n{} Y : {}'.format(X, Y))
+        init_estimator = self.base_estimator(max_node_size=self.max_tree_node_size)
+        init_estimator.fit(X,Y)
+        self.parameters['f'].append(init_estimator)
+        self.parameters['lr'].append(1)
+        for i in range(self.n_estimators):
+            cost = self.optimizer(X,Y)
+            if i % 1 == 0:
+                logger.info('train {}/{}  current cost: {}, test: {}'.format(i,self.n_estimators,cost, self.get_test_cost(X_valid, Y_valid)))
+                # print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
+
+    def get_test_cost(self, X, Y):
+        Y_pred = self.predict(X)
+        return pearson_correlation(Y_pred, Y)
 
     def predict(self, X_pred):
         """
