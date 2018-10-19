@@ -25,7 +25,6 @@ def pearson_correlation(y_pred,y_true):
     if (len(y_pred.shape) == len(y_true.shape) and len(y_true.shape) ==1 ):
         result = np.corrcoef(y_pred, y_true)
         return result[0][1]
-
     # solve 2d array-like y
 
     # column : features
