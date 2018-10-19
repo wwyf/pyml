@@ -102,17 +102,25 @@ class GradientBoostingRegression():
         for i in range(self.n_estimators):
             cost = self.optimizer(X,Y)
             if i % 1 == 0:
-                logger.info('train {}/{}  current cost: {}, test: {}'.format(i,self.n_estimators,cost))
+                logger.info('train {}/{}  current cost: {}'.format(i,self.n_estimators,cost))
                 # print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
 
-    def fit_and_valid(self, X, Y,X_valid,Y_valid, watch=False):
+    def fit_and_valid(self, X, Y,X_valid,Y_valid, mini_batch=0, watch=False):
         logger.debug('X : \n{} Y : {}'.format(X, Y))
         init_estimator = self.base_estimator(max_node_size=self.max_tree_node_size)
         init_estimator.fit(X,Y)
         self.parameters['f'].append(init_estimator)
         self.parameters['lr'].append(1)
         for i in range(self.n_estimators):
-            cost = self.optimizer(X,Y)
+            if mini_batch==0:
+                # 使用全部样例：
+                cost = self.optimizer(X,Y)
+            else :
+                # 使用mini_batch个样例：
+                all_indices = np.arange(0, X.shape[0])
+                np.random.shuffle(all_indices)
+                batch_indices = all_indices[:mini_batch]
+                cost = self.optimizer(X[batch_indices], Y[batch_indices])
             if i % 1 == 0:
                 logger.info('train {}/{}  current cost: {}, test: {}'.format(i,self.n_estimators,cost, self.get_test_cost(X_valid, Y_valid)))
                 # print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
