@@ -35,6 +35,10 @@ class GradientBoostingRegression():
         self.delta=delta
         # key='f' : a list of estimator
         # key='lr' : a list of learning_rate
+        self.information = {
+            'gradient':[],
+            'test_loss':[]
+        }
         self.parameters = {
             'f' : [],
             'lr' : []
@@ -85,6 +89,7 @@ class GradientBoostingRegression():
 
         # 计算学习率，这里默认为初始化参数
         lr = self.learning_rate
+        self.information['gradient'].append(d_fx)
 
         # 创建一个新回归器，去拟合梯度
         new_estimator = self.base_estimator(max_node_size=self.max_tree_node_size)
@@ -122,7 +127,9 @@ class GradientBoostingRegression():
                 batch_indices = all_indices[:mini_batch]
                 cost = self.optimizer(X[batch_indices], Y[batch_indices])
             if i % 1 == 0:
-                logger.info('train {}/{}  current cost: {}, test: {}'.format(i,self.n_estimators,cost, self.get_test_cost(X_valid, Y_valid)))
+                this_loss =  self.get_test_cost(X_valid, Y_valid)
+                self.information['test_loss'].append(this_loss)
+                logger.info('train {}/{}  current cost: {}, test: {}'.format(i,self.n_estimators,cost,this_loss))
                 # print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
 
     def get_test_cost(self, X, Y):
