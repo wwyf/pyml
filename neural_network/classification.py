@@ -207,16 +207,16 @@ class MLPClassifier():
         train_loss : float
         valid_loss : float
         """
-        Y_train_pred = np.round(self.forward(X_test=self.X_train, predict=True))
-        Y_train_pred.reshape((-1))
+        Y_train_pred = np.round(self.forward(X_test=self.X_train, predict=True)).reshape((-1))
         logger.debug('Y_train_pred : \n{}'.format(Y_train_pred))
-        train_loss = precision_score(Y_train_pred, self.Y_train)
+        logger.debug('self.Y_train : \n{}'.format(self.Y_train))
+        train_loss = precision_score(Y_train_pred, self.Y_train.reshape(-1))
 
         if self.X_valid is not None:
             Y_valid_pred = np.round(self.forward(X_test=self.X_valid, predict=True))
             Y_valid_pred.reshape((-1))
             logger.debug('Y_valid_pred : \n{}'.format(Y_valid_pred))
-            valid_loss = precision_score(Y_valid_pred, self.Y_valid)
+            valid_loss = precision_score(Y_valid_pred, self.Y_valid.reshape(-1))
         else:
             valid_loss = 0
 
@@ -270,7 +270,7 @@ def load_planar_dataset():
 
 
 if __name__ == '__main__':
-    logger.setLevel(20)
+    logger.setLevel(10)
     # X_assess, Y_assess = nn_model_test_case()
     # logger.debug('X_assess : \n{}\nshape : {}'.format(X_assess, X_assess.shape))
     # logger.debug('Y_assess : \n{}\nshape : {}'.format(Y_assess, Y_assess.shape))
@@ -282,39 +282,39 @@ if __name__ == '__main__':
     # print("W2 = " + str(clf.parameters["W2"]))
     # print("b2 = " + str(clf.parameters["b2"]))
 # *********************************
-    mini_train_X = np.array([
-        [1,2,3,4,5,6,7,8],
-        [2,3,4,5,6,7,8,9],
-        [3,4,5,6,7,8,9,10],
-        [4,5,6,7,8,9,10,11],
-        [5,6,7,8,9,10,11,12],
-        [6,7,8,9,10,11,12,13],
-        [7,8,9,10,11,12,13,14]
-    ])
-    mini_train_Y = np.array([
-        0,1,0,1,0,1,0
-    ])
-    mini_test_X = np.array([
-        [2,3,4,5,6,7.5,8,9],
-        [4,5,6,7.5,8,9,10,11]
-    ])
-    mini_standard_out_Y = np.array([
-        1,0
-    ])
-    ss = StandardScaler()
-    mini_train_X = ss.fit_transform(mini_train_X)
-    mini_test_X = ss.transform(mini_test_X)
-    print(mini_train_X)
-    print(mini_test_X)
-    clf = MLPClassifier(hidden_size=4, num_iterations=1000, learning_rate=1.2)
-    clf.feat_data(mini_train_X, mini_train_Y, mini_test_X, mini_standard_out_Y)
-    clf.train()
-    print(clf.predict(mini_test_X))
-#*************************************
-    # X,Y = load_planar_dataset()
-    # clf = MLPClassifier(hidden_size=4, num_iterations=10000)
-    # clf.feat_data(X, Y)
+    # mini_train_X = np.array([
+    #     [1,2,3,4,5,6,7,8],
+    #     [2,3,4,5,6,7,8,9],
+    #     [3,4,5,6,7,8,9,10],
+    #     [4,5,6,7,8,9,10,11],
+    #     [5,6,7,8,9,10,11,12],
+    #     [6,7,8,9,10,11,12,13],
+    #     [7,8,9,10,11,12,13,14]
+    # ])
+    # mini_train_Y = np.array([
+    #     0,1,0,1,0,1,0
+    # ])
+    # mini_test_X = np.array([
+    #     [2,3,4,5,6,7.5,8,9],
+    #     [4,5,6,7.5,8,9,10,11]
+    # ])
+    # mini_standard_out_Y = np.array([
+    #     1,0
+    # ])
+    # ss = StandardScaler()
+    # mini_train_X = ss.fit_transform(mini_train_X)
+    # mini_test_X = ss.transform(mini_test_X)
+    # print(mini_train_X)
+    # print(mini_test_X)
+    # clf = MLPClassifier(hidden_size=4, num_iterations=1000, learning_rate=1.2)
+    # clf.feat_data(mini_train_X, mini_train_Y, mini_test_X, mini_standard_out_Y)
     # clf.train()
-    # print(clf.parameters)
-    # print(clf.predict(X))
+    # print(clf.predict(mini_test_X))
+#*************************************
+    X,Y = load_planar_dataset()
+    clf = MLPClassifier(hidden_size=4, num_iterations=10000)
+    clf.feat_data(X, Y, X, Y)
+    clf.train()
+    print(clf.parameters)
+    print(clf.predict(X))
     print(load_planar_dataset())
