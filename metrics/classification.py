@@ -19,9 +19,11 @@ def precision_score(y_true, y_pred):
     -------
         accuracy_rate : double
     """
+    y_true = y_true.reshape(-1)
+    y_pred = y_true.reshape(-1)
     assert(len(y_pred) == len(y_true))
-    assert(len(y_pred.shape) == 1)
-    assert(len(y_true.shape) == 1)
+    # assert(len(y_pred.shape) == 1)
+    # assert(len(y_true.shape) == 1)
     total_num = len(y_pred)
     success_num = 0
     for i in range(0, total_num):
