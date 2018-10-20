@@ -270,7 +270,7 @@ def load_planar_dataset():
 
 
 if __name__ == '__main__':
-    logger.setLevel(10)
+    logger.setLevel(20)
     # X_assess, Y_assess = nn_model_test_case()
     # logger.debug('X_assess : \n{}\nshape : {}'.format(X_assess, X_assess.shape))
     # logger.debug('Y_assess : \n{}\nshape : {}'.format(Y_assess, Y_assess.shape))
