@@ -193,7 +193,6 @@ class GradientBoostingRegression():
             else :
                 # 使用mini_batch个样例：
                 X_batch,Y_batch = self.get_mini_batch()
-                print('!',X_batch.shape,Y_batch.shape)
                 cost = self.optimizer(X_batch, Y_batch)
             if i % self.print_interval == 0:
                 this_loss =  self.get_test_cost(X_valid, Y_valid)
