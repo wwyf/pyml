@@ -83,7 +83,7 @@ class GradientBoostingRegression():
         # key='lr' : a list of learning_rate
         self.information = {
             'gradient':[],
-            'test_loss':[],
+            'valid_loss':[],
             'train_loss':[]
         }
         self.parameters = {
@@ -198,9 +198,9 @@ class GradientBoostingRegression():
             if i % self.print_interval == 0:
                 this_loss =  self.get_test_cost(X_valid, Y_valid)
                 train_loss =  self.get_test_cost(X, Y)
-                self.information['test_loss'].append(this_loss)
+                self.information['valid_loss'].append(this_loss)
                 self.information['train_loss'].append(train_loss)
-                logger.info('train {}/{}  current cost: {}, test: {}'.format(i,self.n_estimators,cost,this_loss))
+                logger.info('train {}/{}  current cost: {},train : {} valid : {}'.format(i,self.n_estimators,cost,train_loss,this_loss))
                 # print('train {}/{}  current cost : {}'.format(i,self.n_estimators,cost))
             self.update_mini_batch()
 
