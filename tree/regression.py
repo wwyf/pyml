@@ -22,7 +22,7 @@ class CartTreeRegressionNode():
     """
     Cart的回归树，默认输入数据都是连续的
     """
-    def __init__(self, feature_names : list, max_node_size=10, cost_func=square_error):
+    def __init__(self, feature_names : list, max_node_size=10,divide_way='half', cost_func=square_error):
         """
         feature_names : list of string
             就是特征名字的列表啦，与矩阵的列号对应，一直都不变
@@ -39,6 +39,7 @@ class CartTreeRegressionNode():
         self.right_tree = None
         self.current_node_value = None
         self.max_node_size = max_node_size
+        self.divide_way=divide_way
         logger.debug('self.id : {}'.format(self.id) +
                     '\nself.feature_names : {}'.format(self.feature_names) +
                     '\nself.max_node_size : {}'.format(self.max_node_size))
@@ -83,11 +84,31 @@ class CartTreeRegressionNode():
         best_split_point = None
 
         for this_feature_index in range(0,len(self.feature_names)):
-            this_feature_values = np.unique(sub_X[:, this_feature_index])
-            # 获得当前feature最佳split_point的gini指数，并与当前最佳比较
-            # 得到这一个feature的所有可取的值
-            for this_feature_value in this_feature_values:
-                # 对可能取到的每一个值，我都要计算以这个值为分割点时的gini指数
+            if self.divide_way == 'default':
+                this_feature_values = np.unique(sub_X[:, this_feature_index])
+                # 获得当前feature最佳split_point的gini指数，并与当前最佳比较
+                # 得到这一个feature的所有可取的值
+                for this_feature_value in this_feature_values:
+                    # 对可能取到的每一个值，我都要计算以这个值为分割点时的gini指数
+                    n_samples = sub_X.shape[0]
+                    # 输入数据默认是连续的
+                    # TODO: 似乎不能够取到最右的端点,那如果等于直接跳过吧~
+                    if this_feature_value == np.amax(sub_X[:,this_feature_index]):
+                        continue
+                    left_branch_Y = sub_Y[sub_X[:,this_feature_index]<=this_feature_value]
+                    right_branch_Y = sub_Y[sub_X[:,this_feature_index]>this_feature_value]
+                    # print(left_branch_Y)
+                    # print(right_branch_Y)
+                    this_feature_cost_value = len(left_branch_Y)/n_samples * self.cost_func(left_branch_Y) + len(right_branch_Y)/n_samples * self.cost_func(right_branch_Y)
+                    # print(this_feature_index, ' ', this_feature_value, ' ', this_feature_cost_value)
+                    # c = input()
+                    # 如果以这个值为分割点的gini指数更小，那就更新best参数
+                    if this_feature_cost_value < best_cost_value:
+                        best_cost_value = this_feature_cost_value
+                        best_feature_column = this_feature_index
+                        best_split_point = this_feature_value
+            elif self.divide_way == 'half':
+                this_feature_value = (np.max(sub_X[:, this_feature_index])+np.min(sub_X[:, this_feature_index]))/2
                 n_samples = sub_X.shape[0]
                 # 输入数据默认是连续的
                 # TODO: 似乎不能够取到最右的端点,那如果等于直接跳过吧~
@@ -199,8 +220,9 @@ class DecisionTreeRegressor():
     使用cart方法，二叉树
     TODO: 没有写剪枝
     """
-    def __init__(self, max_node_size=10):
+    def __init__(self, max_node_size=10, divide_way='half'):
         self.max_node_size = max_node_size
+        self.divide_way=divide_way
 
     def fit(self, X, Y, feature_names=None):
         """
@@ -241,7 +263,7 @@ if __name__ == '__main__':
                   [1,8, 0.46]])
     b = np.array([0,9,1,6,2.4])
     names = ['1','2','3']
-    clf = CartTreeRegressionNode(names)
+    clf = CartTreeRegressionNode(names, max_node_size=1)
     clf.fit_data(a, b, None)
     clf.print_tree('test.png')
     print(clf.get_label(np.array([2,5, 0.6])))

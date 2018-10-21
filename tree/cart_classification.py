@@ -38,7 +38,7 @@ def gini(l):
     return l_h
 
 class CartTreeClassifierNode():
-    def __init__(self, feature_names : list, column_flags : list, max_node_size=10, cost_func=gini):
+    def __init__(self, feature_names : list, column_flags : list, max_node_size=10, divide_way='half', cost_func=gini):
         """
         feature_names : list of string
             就是特征名字的列表啦，与矩阵的列号对应，一直都不变
@@ -58,6 +58,7 @@ class CartTreeClassifierNode():
         self.left_tree = None
         self.right_tree = None
         self.current_node_class = None
+        self.divide_way = divide_way
         logger.debug('self.id : {}'.format(self.id) +
                     '\nself.max_node_size : {}'.format(self.max_node_size) +
                     '\nself.feature_names : {}'.format(self.feature_names) +
@@ -70,7 +71,7 @@ class CartTreeClassifierNode():
             递归过程中，要先记一下父节点的属性，可能有用
         """
 
-        logger.info('training...\ncurrent id : {}\ncurrent data size : {}'.format(self.id, sub_X.shape[0]))
+        logger.debug('training...\ncurrent id : {}\ncurrent data size : {}'.format(self.id, sub_X.shape[0]))
 
         logger.debug(
             'X : \n{}\nY : {}'.format(sub_X, sub_Y)+'\n'+
@@ -106,32 +107,62 @@ class CartTreeClassifierNode():
         logger.debug('in find the best split feature...')
 
         for this_feature_index in range(0,len(self.feature_names)):
-            this_feature_values = np.unique(sub_X[:, this_feature_index])
-            # 获得当前feature最佳split_point的gini指数，并与当前最佳比较
-            # 得到这一个feature的所有可取的值
-            for this_feature_value in this_feature_values:
-                # 对可能取到的每一个值，我都要计算以这个值为分割点时的gini指数
-                n_samples = sub_X.shape[0]
+            n_samples = sub_X.shape[0]
+            if self.divide_way == 'default':
+                this_feature_values = np.unique(sub_X[:, this_feature_index])
+                # 获得当前feature最佳split_point的gini指数，并与当前最佳比较
+                # 得到这一个feature的所有可取的值
+                for this_feature_value in this_feature_values:
+                    # 对可能取到的每一个值，我都要计算以这个值为分割点时的gini指数
+                    if self.column_flags[this_feature_index] == 'continuous':
+                        # 如果当前列的flag说明是连续的
+                        # TODO: 似乎不能够取到最右的端点,那如果等于直接跳过吧~
+                        if this_feature_value == np.amax(sub_X[:,this_feature_index]):
+                            continue
+                        left_branch_Y = sub_Y[sub_X[:,this_feature_index]<=this_feature_value]
+                        right_branch_Y = sub_Y[sub_X[:,this_feature_index]>this_feature_value]
+                    elif self.column_flags[this_feature_index]  == 'discrete':
+                        # 如果当前列的flag说明是离散的
+                        left_branch_Y = sub_Y[sub_X[:,this_feature_index]==this_feature_value]
+                        right_branch_Y = sub_Y[sub_X[:,this_feature_index]!=this_feature_value]
+                    this_feature_gini_value = len(left_branch_Y)/n_samples * gini(left_branch_Y) + len(right_branch_Y)/n_samples * gini(right_branch_Y)
+
+                    logger.debug('in feature({}:{}) value({}) gini_value({})\nleft_branch_Y : {}\nright_branch_Y : {}'.format(this_feature_index,self.feature_names[this_feature_index], this_feature_value, this_feature_gini_value, left_branch_Y, right_branch_Y))
+
+                    # 如果以这个值为分割点的gini指数更小，那就更新best参数
+                    if this_feature_gini_value < best_gini_value:
+                        best_gini_value = this_feature_gini_value
+                        best_feature_column = this_feature_index
+                        best_split_point = this_feature_value
+            elif self.divide_way == 'half':
+                #  这一个就是，对于连续数据直接对半分
                 if self.column_flags[this_feature_index] == 'continuous':
-                    # 如果当前列的flag说明是连续的
-                    # TODO: 似乎不能够取到最右的端点,那如果等于直接跳过吧~
-                    if this_feature_value == np.amax(sub_X[:,this_feature_index]):
-                        continue
+                    this_feature_value = (np.max(sub_X[:, this_feature_index])+np.min(sub_X[:, this_feature_index]))/2
                     left_branch_Y = sub_Y[sub_X[:,this_feature_index]<=this_feature_value]
                     right_branch_Y = sub_Y[sub_X[:,this_feature_index]>this_feature_value]
+                    this_feature_gini_value = len(left_branch_Y)/n_samples * gini(left_branch_Y) + len(right_branch_Y)/n_samples * gini(right_branch_Y)
+                    logger.debug('in feature({}:{}) value({}) gini_value({})\nleft_branch_Y : {}\nright_branch_Y : {}'.format(this_feature_index,self.feature_names[this_feature_index], this_feature_value, this_feature_gini_value, left_branch_Y, right_branch_Y))
+                    # 如果以这个值为分割点的gini指数更小，那就更新best参数
+                    if this_feature_gini_value < best_gini_value:
+                        best_gini_value = this_feature_gini_value
+                        best_feature_column = this_feature_index
+                        best_split_point = this_feature_value
                 elif self.column_flags[this_feature_index]  == 'discrete':
-                    # 如果当前列的flag说明是离散的
-                    left_branch_Y = sub_Y[sub_X[:,this_feature_index]==this_feature_value]
-                    right_branch_Y = sub_Y[sub_X[:,this_feature_index]!=this_feature_value]
-                this_feature_gini_value = len(left_branch_Y)/n_samples * gini(left_branch_Y) + len(right_branch_Y)/n_samples * gini(right_branch_Y)
-
-                logger.debug('in feature({}:{}) value({}) gini_value({})\nleft_branch_Y : {}\nright_branch_Y : {}'.format(this_feature_index,self.feature_names[this_feature_index], this_feature_value, this_feature_gini_value, left_branch_Y, right_branch_Y))
-
-                # 如果以这个值为分割点的gini指数更小，那就更新best参数
-                if this_feature_gini_value < best_gini_value:
-                    best_gini_value = this_feature_gini_value
-                    best_feature_column = this_feature_index
-                    best_split_point = this_feature_value
+                    # 离散数据
+                    this_feature_values = np.unique(sub_X[:, this_feature_index])
+                    for this_feature_value in this_feature_values:
+                        n_samples = sub_X.shape[0]
+                        left_branch_Y = sub_Y[sub_X[:,this_feature_index]==this_feature_value]
+                        right_branch_Y = sub_Y[sub_X[:,this_feature_index]!=this_feature_value]
+                        this_feature_gini_value = len(left_branch_Y)/n_samples * gini(left_branch_Y) + len(right_branch_Y)/n_samples * gini(right_branch_Y)
+                        logger.debug('in feature({}:{}) value({}) gini_value({})\nleft_branch_Y : {}\nright_branch_Y : {}'.format(this_feature_index,self.feature_names[this_feature_index], this_feature_value, this_feature_gini_value, left_branch_Y, right_branch_Y))
+                        # 如果以这个值为分割点的gini指数更小，那就更新best参数
+                        if this_feature_gini_value < best_gini_value:
+                            best_gini_value = this_feature_gini_value
+                            best_feature_column = this_feature_index
+                            best_split_point = this_feature_value
+            else:
+                raise NotImplementedError
         
         self.feature_column = best_feature_column
         self.split_value = best_split_point
@@ -237,8 +268,9 @@ class DecisionTreeClassifier():
     使用cart方法，二叉树
     TODO: 没有写剪枝
     """
-    def __init__(self, max_node_size=10):
+    def __init__(self, max_node_size=10, divide_way='half'):
         self.max_node_size = max_node_size
+        self.divide_way = divide_way
 
     def fit(self, X, Y, column_flags, feature_names=None):
         """
@@ -254,7 +286,12 @@ class DecisionTreeClassifier():
         if feature_names is None:
             feature_names = [str(i) for i in range(n_features)]
         logger.debug('feature_names : {}'.format(feature_names))
-        self.root_node = CartTreeClassifierNode(feature_names, column_flags, max_node_size=self.max_node_size)
+        self.root_node = CartTreeClassifierNode(
+            feature_names, 
+            column_flags, 
+            max_node_size=self.max_node_size,
+            divide_way=self.divide_way
+        )
         self.root_node.fit_data(X, Y,None)
 
     def predict(self, X_pred):
@@ -287,5 +324,5 @@ if __name__ == '__main__':
     clf.fit(a,b,flags,names)
     clf.root_node.print_tree('test.png')
     print(clf.predict(np.array([[2,5, 0.6]])))
-    print(clf.predict(np.array([[1,4,0.4]])))
+    print(clf.predict(np.array([[1,7,0.2]])))
     print(clf.predict(np.array([[1,5, 0.8]])))
