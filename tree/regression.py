@@ -65,7 +65,7 @@ class CartTreeRegressionNode():
             return
 
         # 从sub_Y里面取均值，作为该节点的结果
-        self.current_node_value = np.mean(sub_Y).item()
+        self.current_node_value = np.mean(sub_Y)
 
         logger.debug('self.current_node_value : {}'.format(self.current_node_value))
 
@@ -126,6 +126,8 @@ class CartTreeRegressionNode():
                     best_cost_value = this_feature_cost_value
                     best_feature_column = this_feature_index
                     best_split_point = this_feature_value
+            else:
+                raise NotImplementedError
         
         self.feature_column = best_feature_column
         self.split_value = best_split_point
@@ -150,9 +152,9 @@ class CartTreeRegressionNode():
         logger.debug('get left branch X : \n{}\nget left branch Y : {}'.format(best_left_branch_X, best_left_branch_Y))
         logger.debug('get right branch X : \n{}\nget right branch Y : {}'.format(best_right_branch_X, best_right_branch_Y))
 
-        self.left_tree = CartTreeRegressionNode(self.feature_names, max_node_size=self.max_node_size, cost_func=self.cost_func)
+        self.left_tree = CartTreeRegressionNode(self.feature_names, max_node_size=self.max_node_size, divide_way=self.divide_way ,cost_func=self.cost_func)
         self.left_tree.fit_data(best_left_branch_X, best_left_branch_Y, self.current_node_value)
-        self.right_tree = CartTreeRegressionNode(self.feature_names,max_node_size=self.max_node_size, cost_func=self.cost_func)
+        self.right_tree = CartTreeRegressionNode(self.feature_names,max_node_size=self.max_node_size,divide_way=self.divide_way , cost_func=self.cost_func)
         self.right_tree.fit_data(best_right_branch_X, best_right_branch_Y, self.current_node_value)
     def set_leaf(self, current_value):
         self.is_leaf = True
@@ -235,7 +237,7 @@ class DecisionTreeRegressor():
         n_features = X.shape[1]
         if feature_names is None:
             feature_names = [str(i) for i in range(n_features)]
-        self.root_node = CartTreeRegressionNode(feature_names, max_node_size=self.max_node_size)
+        self.root_node = CartTreeRegressionNode(feature_names, max_node_size=self.max_node_size, divide_way=self.divide_way)
         self.root_node.fit_data(X, Y,None)
 
     def predict(self, X_pred):

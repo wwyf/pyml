@@ -194,9 +194,9 @@ class CartTreeClassifierNode():
         logger.debug('get left branch X : \n{}\nget left branch Y : {}'.format(best_left_branch_X, best_left_branch_Y))
         logger.debug('get right branch X : \n{}\nget right branch Y : {}'.format(best_right_branch_X, best_right_branch_Y))
 
-        self.left_tree = CartTreeClassifierNode( self.feature_names, self.column_flags, max_node_size=self.max_node_size, cost_func=self.cost_func)
+        self.left_tree = CartTreeClassifierNode( self.feature_names, self.column_flags, max_node_size=self.max_node_size, divide_way=self.divide_way , cost_func=self.cost_func)
         self.left_tree.fit_data(best_left_branch_X, best_left_branch_Y, self.current_node_class)
-        self.right_tree = CartTreeClassifierNode(self.feature_names, self.column_flags, max_node_size=self.max_node_size, cost_func=self.cost_func)
+        self.right_tree = CartTreeClassifierNode(self.feature_names, self.column_flags, max_node_size=self.max_node_size, divide_way=self.divide_way , cost_func=self.cost_func)
         self.right_tree.fit_data(best_right_branch_X, best_right_branch_Y, self.current_node_class)
 
     def set_leaf(self, current_class):
