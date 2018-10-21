@@ -87,7 +87,7 @@ class LogisticClassifier():
         X : 2d array-like shape(n_features, n_samples)
         Y : 2d array-like shape(1, n_samples)
         """
-        self.mini_batches = random_mini_batches(X, Y, self.mini_batc)
+        self.mini_batches = random_mini_batches(X, Y, self.mini_batch)
         self.current_mini_batch_index = 0
 
     def get_mini_batch(self):
