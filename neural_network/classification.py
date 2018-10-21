@@ -235,7 +235,7 @@ class MLPClassifier():
     def train(self):
         for i in range(self.num_iterations):
             cost, train_loss, valid_loss = self.train_one()
-            if i % 10 == 0:
+            if i % 1 == 0:
                 logger.info('train {}/{}  current cost: {}, train: {} ,valid: {}'.format(i,self.num_iterations,cost,train_loss, valid_loss))
 
     def train_one(self):

@@ -1,6 +1,7 @@
 import numpy as np
 from pyml.metrics.classification import precision_score
 from pyml.logger import logger
+import math
 
 def sigmoid(z):
     """
@@ -17,20 +18,53 @@ def sigmoid(z):
     s = 1 / (1 + np.exp(-z))
     return s
 
+
+def random_mini_batches(X, Y, mini_batch_size = 64, seed = None):
+    """
+    X : shape(n_features, n_samples)
+    Y : shape(1, n_samples)
+    """
+    if seed is not None:
+        np.random.seed(seed)
+    m = X.shape[1]
+    mini_batches = []
+    # Step 1: Shuffle (X, Y)
+    permutation = list(np.random.permutation(m))
+    shuffled_X = X[:, permutation]
+    shuffled_Y = Y[:, permutation].reshape((1,m))
+    # Step 2: Partition (shuffled_X, shuffled_Y). Minus the end case.
+    num_complete_minibatches = math.floor(m/mini_batch_size) # number of mini batches of size mini_batch_size in your partitionning
+    for k in range(0, num_complete_minibatches):
+        mini_batch_X = shuffled_X[:, k * mini_batch_size : (k+1) * mini_batch_size]
+        mini_batch_Y = shuffled_Y[:, k * mini_batch_size : (k+1) * mini_batch_size]
+        mini_batch = (mini_batch_X, mini_batch_Y)
+        mini_batches.append(mini_batch)
+
+    # Handling the end case (last mini-batch < mini_batch_size)
+    if m % mini_batch_size != 0:
+        mini_batch_X = shuffled_X[:, num_complete_minibatches * mini_batch_size : m]
+        mini_batch_Y = shuffled_Y[:, num_complete_minibatches * mini_batch_size : m]
+        mini_batch = (mini_batch_X, mini_batch_Y)
+        mini_batches.append(mini_batch)
+    return mini_batches
+
 class LogisticClassifier():
     """
     二元分类器，分类结果为0,1
     """
-    def  __init__(self, learning_rate=0.1, num_iterations=2000, mini_batch=0):
+    def  __init__(self, learning_rate=0.1, num_iterations=2000, mini_batch=0, lambda_l2=0):
         self.learning_rate = learning_rate
         self.num_iterations = num_iterations
         self.mini_batch = mini_batch
+        self.lambda_l2 = lambda_l2
         self.parameters = {}
         self.information = {
             'test_loss' : [],
             'train_loss' : [],
             'cost' : []
         }
+        self.mini_batches = []
+        self.current_mini_batch_index = 0
     
     def initialize_parameters(self, n_features):
         """
@@ -48,6 +82,19 @@ class LogisticClassifier():
         # parameters['b'] = 0
         return parameters
 
+    def init_mini_batches(self, X, Y):
+        """
+        X : 2d array-like shape(n_features, n_samples)
+        Y : 2d array-like shape(1, n_samples)
+        """
+        self.mini_batches = random_mini_batches(X, Y, self.mini_batc)
+        self.current_mini_batch_index = 0
+
+    def get_mini_batch(self):
+        current_mini_batch = self.mini_batches[self.current_mini_batch_index]
+        self.current_mini_batch_index = (self.current_mini_batch_index+1) % len(self.mini_batches)
+        return current_mini_batch
+
     def propagate(self, w, b, X, Y):
         """
         Parameters
@@ -56,12 +103,17 @@ class LogisticClassifier():
         b : 1d array-like shape(1,)
         X : 2d array-like shape(n_features, n_samples)
         Y : 1d array-like shape(1, n_samples)
+
+        Returns
+        -------
+        dw : same shape as w
         """
         m = X.shape[1]
         A = sigmoid(np.dot(w.T, X) + b)
-        cost = -1 / m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1 - A))
-        dw = 1 / m * np.dot(X, (A - Y).T)
-        db = 1 / m * np.sum(A - Y)
+        l2 = self.lambda_l2 * (np.square(w).sum()+np.square(b).sum())/m
+        cost = -1 / m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1 - A)) + l2
+        dw = 1 / m * np.dot(X, (A - Y).T) + self.lambda_l2 * w/m
+        db = 1 / m * np.sum(A - Y) + self.lambda_l2 * b/m
         cost = np.squeeze(cost)
         grads = {"dw": dw,
                 "db": db}
@@ -111,11 +163,10 @@ class LogisticClassifier():
         if self.mini_batch == 0:
             grads, cost = self.propagate(w, b, X, Y)
         else:
-            all_indices = np.arange(0, X.shape[0])
-            np.random.shuffle(all_indices)
-            batch_indices = all_indices[:mini_batch]
-            logger.debug('batch_indices : {}\nshape:{}'.format(batch_indices,batch_indices.shape))
-            grads, cost = self.propagate(w,b,X[:,batch_indices], Y[:,batch_indices])
+            X_batch,Y_batch = self.get_mini_batch()
+            logger.debug('X_batch : {}\nshape:{}'.format(X_batch,X_batch.shape))
+            logger.debug('Y_batch : {}\nshape:{}'.format(Y_batch,Y_batch.shape))
+            grads, cost = self.propagate(w,b,X_batch, Y_batch)
 
         dw = grads["dw"]
         db = grads["db"]
@@ -136,6 +187,7 @@ class LogisticClassifier():
         
         """
         n_features = X.shape[1]
+        n_samples = X.shape[0]
         parameters = self.initialize_parameters(n_features)
         w = parameters['w']
         b = parameters['b']
@@ -162,7 +214,7 @@ class LogisticClassifier():
         b = parameters['b']
         X_T = X.T
         Y_T = Y.reshape((1,-1))
-        
+        self.init_mini_batches(X_T, Y_T)
         for i in range(self.num_iterations):
             self.parameters, grads, cost = self.optimize_single(w,b, X_T, Y_T)
             w = self.parameters['w']
